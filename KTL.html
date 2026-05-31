@@ -1,0 +1,3351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KTL — Kḗryxon ton Lógon</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   KTL — DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --ink:        #0f0d0a;
+  --ink-2:      #2a2420;
+  --ink-3:      #5a5048;
+  --ink-4:      #8a7e74;
+  --parchment:  #faf6ef;
+  --parchment-2:#f3ece0;
+  --parchment-3:#e8ddd0;
+  --gold:       #b8973e;
+  --gold-2:     #d4b96a;
+  --gold-3:     #ede0c0;
+  --accent:     #7b5e3a;
+  --accent-2:   #a07848;
+  --danger:     #9b3a2e;
+  --success:    #2e6e4a;
+  --info:       #2e4e6e;
+  --sidebar-w:  240px;
+  --topbar-h:   58px;
+  --radius:     3px;
+  --radius-lg:  6px;
+  --shadow-sm:  0 1px 4px rgba(15,13,10,.08);
+  --shadow:     0 2px 12px rgba(15,13,10,.12);
+  --shadow-lg:  0 8px 32px rgba(15,13,10,.18);
+  --transition: 0.18s ease;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Lato',sans-serif;font-size:.9rem;color:var(--ink);background:var(--parchment);line-height:1.5;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--parchment-3);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--ink-4);}
+button{cursor:pointer;font-family:'Lato',sans-serif;}
+input,textarea,select{font-family:'Lato',sans-serif;font-size:.88rem;}
+a{color:inherit;text-decoration:none;}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+#app{display:flex;height:100vh;overflow:hidden;}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--ink-2);
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+  position:relative;z-index:20;
+}
+
+.sidebar-brand{
+  padding:20px 18px 16px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:12px;
+}
+
+.brand-icon{
+  width:36px;height:36px;
+  background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+.brand-icon svg{width:20px;height:20px;color:var(--ink-2);}
+
+.brand-text{}
+.brand-name{
+  font-family:'Cinzel',serif;
+  font-size:1.15rem;font-weight:700;
+  letter-spacing:.12em;color:#fff;
+  line-height:1;
+}
+.brand-tagline{
+  font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold-2);
+  margin-top:3px;
+}
+
+.sidebar-user{
+  padding:12px 18px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:10px;
+}
+
+.user-av{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;color:#fff;
+  overflow:hidden;flex-shrink:0;
+}
+.user-av img{width:100%;height:100%;object-fit:cover;}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:.78rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-role{font-size:.62rem;color:var(--gold-2);letter-spacing:.06em;}
+.btn-logout{background:none;border:none;color:rgba(255,255,255,.3);font-size:.7rem;padding:4px;transition:color var(--transition);}
+.btn-logout:hover{color:var(--danger);}
+
+.nav-section{padding:16px 0 8px;}
+.nav-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:rgba(255,255,255,.25);
+  padding:0 18px 6px;
+}
+
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 18px;
+  color:rgba(255,255,255,.5);
+  font-size:.82rem;font-weight:400;
+  border-left:2px solid transparent;
+  transition:all var(--transition);
+  user-select:none;
+}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.7;}
+.nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04);}
+.nav-item.active{
+  color:#fff;font-weight:700;
+  border-left-color:var(--gold);
+  background:rgba(184,151,62,.1);
+}
+.nav-item.active svg{opacity:1;color:var(--gold);}
+
+.nav-count{
+  margin-left:auto;
+  background:rgba(255,255,255,.1);
+  color:rgba(255,255,255,.5);
+  font-size:.6rem;font-weight:700;
+  padding:1px 6px;border-radius:10px;
+}
+.nav-item.active .nav-count{background:var(--gold);color:var(--ink-2);}
+
+.sidebar-footer{
+  margin-top:auto;
+  padding:14px 18px;
+  border-top:1px solid rgba(255,255,255,.07);
+}
+
+.btn-new-doc{
+  width:100%;
+  background:var(--gold);
+  color:var(--ink-2);
+  border:none;
+  padding:10px 14px;
+  font-family:'Cinzel',serif;
+  font-size:.68rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all var(--transition);
+}
+.btn-new-doc:hover{background:var(--gold-2);transform:translateY(-1px);box-shadow:var(--shadow);}
+.btn-new-doc svg{width:13px;height:13px;}
+
+/* ═══════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════ */
+#main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;}
+
+#topbar{
+  height:var(--topbar-h);
+  background:#fff;
+  border-bottom:1px solid var(--parchment-3);
+  display:flex;align-items:center;
+  padding:0 24px;gap:14px;
+  flex-shrink:0;box-shadow:var(--shadow-sm);
+}
+
+.topbar-breadcrumb{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Cinzel',serif;
+  font-size:.72rem;letter-spacing:.1em;
+  color:var(--ink-4);
+}
+.breadcrumb-sep{color:var(--parchment-3);}
+.breadcrumb-current{color:var(--ink-2);font-weight:600;}
+
+.topbar-spacer{flex:1;}
+
+.search-wrap{
+  display:flex;align-items:center;gap:8px;
+  background:var(--parchment);
+  border:1px solid var(--parchment-3);
+  border-radius:var(--radius);
+  padding:6px 12px;width:220px;
+  transition:border-color var(--transition);
+}
+.search-wrap:focus-within{border-color:var(--gold);}
+.search-wrap svg{width:13px;height:13px;color:var(--ink-4);flex-shrink:0;}
+.search-wrap input{border:none;background:none;outline:none;font-size:.8rem;color:var(--ink);width:100%;}
+.search-wrap input::placeholder{color:var(--ink-4);}
+
+.topbar-btn{
+  background:none;border:1px solid var(--parchment-3);
+  width:32px;height:32px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-4);transition:all var(--transition);
+}
+.topbar-btn:hover{border-color:var(--gold);color:var(--accent);background:var(--parchment);}
+.topbar-btn svg{width:14px;height:14px;}
+
+/* ═══════════════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════════════ */
+#content{flex:1;overflow-y:auto;padding:28px;}
+
+/* ═══════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════ */
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:24px;
+}
+.page-header-left h2{
+  font-family:'Cinzel',serif;font-size:1.2rem;font-weight:600;
+  letter-spacing:.06em;color:var(--ink-2);
+}
+.page-header-left p{font-size:.78rem;color:var(--ink-4);margin-top:3px;}
+.page-header-actions{display:flex;gap:8px;align-items:center;}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:var(--radius);
+  font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  border:none;transition:all var(--transition);
+}
+.btn svg{width:13px;height:13px;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--ink-2);transform:translateY(-1px);box-shadow:var(--shadow);}
+.btn-gold{background:var(--gold);color:var(--ink-2);}
+.btn-gold:hover{background:var(--gold-2);}
+.btn-ghost{background:none;color:var(--ink-3);border:1px solid var(--parchment-3);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--accent);background:var(--parchment);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{opacity:.9;}
+.btn-sm{padding:5px 12px;font-size:.7rem;}
+.btn-xs{padding:4px 9px;font-size:.65rem;}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;}
+
+/* ═══════════════════════════════════════════
+   CARDS / PANELS
+═══════════════════════════════════════════ */
+.card{
+  background:#fff;
+  border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
+}
+.card-header{
+  padding:14px 18px;
+  border-bottom:1px solid var(--parchment-3);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{
+  font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title svg{width:13px;height:13px;color:var(--gold);}
+.card-body{padding:18px;}
+
+/* ═══════════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════════ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);padding:16px 18px;
+  border-top:3px solid var(--parchment-3);
+  transition:border-top-color var(--transition);
+  box-shadow:var(--shadow-sm);
+}
+.stat-card:hover{border-top-color:var(--gold);}
+.stat-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.stat-icon{
+  width:32px;height:32px;border-radius:var(--radius);
+  background:var(--parchment);
+  display:flex;align-items:center;justify-content:center;
+}
+.stat-icon svg{width:15px;height:15px;color:var(--gold);}
+.stat-period{font-size:.62rem;color:var(--ink-4);letter-spacing:.06em;text-transform:uppercase;}
+.stat-num{
+  font-family:'Cinzel',serif;font-size:2rem;font-weight:700;
+  color:var(--ink-2);line-height:1;
+}
+.stat-label{font-size:.68rem;color:var(--ink-4);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;}
+.stat-sub{font-size:.7rem;color:var(--success);margin-top:6px;font-weight:700;}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD GRID
+═══════════════════════════════════════════ */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.dash-grid .span-2{grid-column:span 2;}
+.dash-grid .span-3{grid-column:span 3;}
+
+/* ═══════════════════════════════════════════
+   CHART — PRODUCTION BY YEAR
+═══════════════════════════════════════════ */
+#chart-years{height:180px;position:relative;}
+.chart-bars{
+  display:flex;align-items:flex-end;gap:5px;
+  height:140px;padding:0 4px;
+  border-bottom:1px solid var(--parchment-3);
+}
+.chart-bar-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-end;gap:3px;flex:1;height:100%;
+}
+.chart-bar{
+  width:100%;min-width:8px;
+  background:var(--gold-2);border-radius:2px 2px 0 0;
+  transition:background var(--transition);
+  position:relative;cursor:pointer;flex-shrink:0;
+}
+.chart-bar:hover{background:var(--gold);}
+.chart-bar.empty{background:var(--parchment-3);}
+.chart-bar-tooltip{
+  position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);
+  background:var(--ink-2);color:#fff;
+  font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:2px;
+  white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;
+}
+.chart-bar:hover .chart-bar-tooltip{opacity:1;}
+.chart-bar-label{font-size:.58rem;color:var(--ink-4);white-space:nowrap;margin-top:4px;}
+
+/* ═══════════════════════════════════════════
+   BIBLE BOOK MAP
+═══════════════════════════════════════════ */
+.bible-map{display:flex;flex-direction:column;gap:8px;}
+.bible-section-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-4);margin-bottom:4px;
+}
+.bible-books-grid{display:flex;flex-wrap:wrap;gap:4px;}
+.bible-book-cell{
+  width:38px;height:38px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  border-radius:var(--radius);border:1px solid var(--parchment-3);
+  font-size:.55rem;font-weight:700;color:var(--ink-4);
+  cursor:pointer;transition:all var(--transition);
+  background:#fff;position:relative;
+  text-align:center;line-height:1.2;
+}
+.bible-book-cell:hover{border-color:var(--gold);z-index:2;}
+.book-abbr{font-size:.55rem;font-weight:700;line-height:1;}
+.book-count{font-size:.52rem;font-weight:900;line-height:1;opacity:.9;}
+.bible-book-cell.has-sermons-1{background:var(--gold-3);border-color:var(--gold-2);color:var(--accent);}
+.bible-book-cell.has-sermons-2{background:var(--parchment-2);border-color:var(--gold);color:var(--accent);}
+.bible-book-cell.has-sermons-3{background:var(--gold-2);border-color:var(--gold);color:var(--ink-2);}
+.bible-book-cell.has-sermons-4{background:var(--gold);border-color:var(--accent);color:var(--ink-2);}
+.bible-book-tooltip{
+  position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);
+  background:var(--ink-2);color:#fff;
+  font-size:.62rem;padding:4px 8px;border-radius:2px;
+  white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .15s;z-index:10;
+}
+.bible-book-cell:hover .bible-book-tooltip{opacity:1;}
+
+/* ═══════════════════════════════════════════
+   THEME CLOUD
+═══════════════════════════════════════════ */
+.theme-cloud{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:4px;}
+.theme-tag{
+  font-family:'Cormorant Garamond',serif;
+  color:var(--accent);cursor:default;
+  transition:color var(--transition);
+  line-height:1;
+}
+.theme-tag:hover{color:var(--gold);}
+
+/* ═══════════════════════════════════════════
+   TYPE DONUT
+═══════════════════════════════════════════ */
+.donut-wrap{display:flex;align-items:center;gap:20px;}
+.donut-svg{flex-shrink:0;}
+.donut-legend{display:flex;flex-direction:column;gap:8px;flex:1;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.78rem;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.legend-label{flex:1;color:var(--ink-3);}
+.legend-val{font-weight:700;color:var(--ink-2);}
+
+/* ═══════════════════════════════════════════
+   RECENT LIST
+═══════════════════════════════════════════ */
+.recent-list{display:flex;flex-direction:column;gap:0;}
+.recent-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--parchment-2);
+  cursor:pointer;transition:background var(--transition);
+}
+.recent-item:last-child{border-bottom:none;}
+.recent-item:hover{background:var(--parchment);}
+.recent-type-dot{
+  width:6px;height:6px;border-radius:50%;flex-shrink:0;
+}
+.recent-title{flex:1;font-size:.82rem;font-weight:700;color:var(--ink-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.recent-ref{font-size:.72rem;color:var(--gold);font-weight:700;}
+.recent-date{font-size:.68rem;color:var(--ink-4);}
+
+/* ═══════════════════════════════════════════
+   SERMON LIST VIEW
+═══════════════════════════════════════════ */
+.filters-bar{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:16px;flex-wrap:wrap;
+}
+.filter-select{
+  border:1px solid var(--parchment-3);background:var(--parchment);
+  padding:6px 10px;border-radius:var(--radius);
+  font-size:.75rem;color:var(--ink-2);outline:none;
+  cursor:pointer;transition:border-color var(--transition);
+}
+.filter-select:focus{border-color:var(--gold);}
+.filter-spacer{flex:1;}
+
+.sermons-table{width:100%;border-collapse:collapse;}
+.sermons-table th{
+  text-align:left;padding:8px 12px;
+  font-size:.62rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-4);
+  border-bottom:2px solid var(--parchment-3);
+  white-space:nowrap;
+}
+.sermons-table td{
+  padding:10px 12px;
+  border-bottom:1px solid var(--parchment-2);
+  font-size:.82rem;color:var(--ink-2);vertical-align:middle;
+}
+.sermons-table tr:hover td{background:var(--parchment);}
+.sermons-table tr{cursor:pointer;}
+.td-title{font-weight:700;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.td-ref{color:var(--gold);font-weight:700;font-size:.78rem;white-space:nowrap;}
+.td-theme{color:var(--ink-3);font-size:.78rem;}
+.td-date{color:var(--ink-4);font-size:.75rem;white-space:nowrap;}
+.td-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--transition);}
+.sermons-table tr:hover .td-actions{opacity:1;}
+.tbl-btn{
+  background:none;border:1px solid var(--parchment-3);
+  width:26px;height:26px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-4);transition:all var(--transition);
+}
+.tbl-btn:hover{border-color:var(--gold);color:var(--accent);}
+.tbl-btn.danger:hover{border-color:var(--danger);color:var(--danger);}
+.tbl-btn svg{width:12px;height:12px;}
+
+/* ═══════════════════════════════════════════
+   TYPE BADGE
+═══════════════════════════════════════════ */
+.badge{
+  display:inline-block;font-size:.6rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;
+}
+.badge-sermao{background:#f3ede2;color:var(--accent);}
+.badge-aula{background:#e2edf3;color:var(--info);}
+.badge-palestra{background:#ede2f3;color:#5e3a7b;}
+.badge-devocional{background:#e2f3ec;color:var(--success);}
+.badge-estudo{background:#f3f0e2;color:#6b5a2e;}
+
+/* ═══════════════════════════════════════════
+   EDITOR
+═══════════════════════════════════════════ */
+#editor-view{display:flex;flex-direction:column;height:100%;}
+
+.editor-topbar{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 20px;
+  background:#fff;border-bottom:1px solid var(--parchment-3);
+  flex-shrink:0;flex-wrap:wrap;
+}
+.editor-topbar-left{display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap;}
+.editor-topbar-right{display:flex;align-items:center;gap:8px;}
+
+.mode-toggle{
+  display:flex;background:var(--parchment);
+  border:1px solid var(--parchment-3);border-radius:var(--radius);overflow:hidden;
+}
+.mode-btn{
+  padding:5px 14px;border:none;background:none;
+  font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-4);cursor:pointer;transition:all var(--transition);
+}
+.mode-btn.active{background:var(--accent);color:#fff;}
+
+.type-select{
+  border:1px solid var(--parchment-3);background:var(--parchment);
+  padding:5px 10px;border-radius:var(--radius);
+  font-size:.75rem;font-weight:700;color:var(--ink-2);outline:none;
+}
+
+.editor-body{display:flex;flex:1;min-height:0;}
+
+/* Free editor */
+#free-editor{
+  flex:1;overflow-y:auto;
+  padding:24px 28px;
+  display:flex;flex-direction:column;gap:14px;
+}
+
+.field-group{display:flex;flex-direction:column;gap:5px;}
+.field-label{
+  font-size:.62rem;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-4);
+}
+.field-input{
+  border:1px solid var(--parchment-3);background:#fff;
+  padding:9px 12px;border-radius:var(--radius);
+  font-size:.9rem;color:var(--ink);outline:none;width:100%;
+  transition:border-color var(--transition);
+}
+.field-input:focus{border-color:var(--gold);}
+.field-input.title{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:600;}
+.field-textarea{
+  border:1px solid var(--parchment-3);background:#fff;
+  padding:12px;border-radius:var(--radius);
+  font-family:'Cormorant Garamond',serif;font-size:1.1rem;line-height:1.85;
+  color:var(--ink);outline:none;resize:vertical;width:100%;
+  min-height:380px;transition:border-color var(--transition);
+}
+.field-textarea:focus{border-color:var(--gold);}
+.field-hint{font-size:.68rem;color:var(--ink-4);font-style:italic;}
+.fields-row{display:flex;gap:12px;}
+.fields-row .field-group{flex:1;}
+
+/* Structured editor */
+#structured-editor{
+  flex:1;overflow-y:auto;padding:24px 28px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.struct-card{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);overflow:hidden;
+}
+.struct-card-header{
+  padding:10px 16px;background:var(--parchment);
+  border-bottom:1px solid var(--parchment-3);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.struct-card-title{
+  font-family:'Cinzel',serif;font-size:.65rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:7px;
+}
+.struct-card-title svg{width:12px;height:12px;color:var(--gold);}
+.struct-card-body{padding:16px;}
+.point-card{
+  background:var(--parchment);border:1px solid var(--parchment-3);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;position:relative;
+}
+.point-card:last-child{margin-bottom:0;}
+.point-num{
+  font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;
+  letter-spacing:.16em;color:var(--gold);margin-bottom:10px;text-transform:uppercase;
+}
+.btn-rm-point{
+  position:absolute;top:10px;right:10px;
+  background:none;border:none;color:var(--ink-4);
+  width:20px;height:20px;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;transition:all var(--transition);
+}
+.btn-rm-point:hover{background:#ffeaea;color:var(--danger);}
+.btn-add-point{
+  width:100%;border:1px dashed var(--parchment-3);background:none;
+  padding:9px;border-radius:var(--radius);
+  font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-4);transition:all var(--transition);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-add-point:hover{border-color:var(--gold);color:var(--accent);background:var(--parchment);}
+.btn-add-point svg{width:12px;height:12px;}
+
+/* Preview pane */
+#preview-pane{
+  width:360px;min-width:360px;
+  border-left:1px solid var(--parchment-3);
+  background:#fff;display:flex;flex-direction:column;overflow:hidden;
+}
+.preview-header{
+  padding:10px 14px;background:var(--parchment);
+  border-bottom:1px solid var(--parchment-3);
+  font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-4);display:flex;align-items:center;gap:7px;
+}
+.preview-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+#preview-content{
+  flex:1;overflow-y:auto;padding:20px 18px;
+  font-family:'Cormorant Garamond',serif;font-size:.95rem;line-height:1.75;
+  color:var(--ink);
+}
+#preview-content .prev-title{
+  font-family:'Cinzel',serif;font-size:1rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;text-align:center;margin-bottom:3px;
+}
+#preview-content .prev-sub{
+  font-family:'Lato',sans-serif;font-size:.6rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
+  text-align:center;margin-bottom:12px;
+}
+#preview-content .prev-orn{
+  text-align:center;color:var(--gold-2);letter-spacing:.4em;
+  margin:10px 0;font-size:.8rem;
+}
+#preview-content .prev-bible{
+  background:#f3ede2;border-left:3px solid var(--gold);
+  padding:12px 14px;margin:10px 0;font-style:italic;font-size:.9rem;
+}
+#preview-content .prev-sect{
+  font-family:'Cinzel',serif;font-size:.6rem;font-weight:600;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:8px;margin:16px 0 10px;
+}
+#preview-content .prev-sect::before,
+#preview-content .prev-sect::after{content:'';flex:1;height:1px;background:var(--parchment-3);}
+#preview-content .prev-point{
+  font-family:'Cinzel',serif;font-size:.82rem;font-weight:600;
+  color:var(--accent);margin:12px 0 3px;
+}
+#preview-content .prev-impact{
+  text-align:center;font-style:italic;font-size:.95rem;font-weight:600;
+  color:var(--accent);border-top:1px solid var(--parchment-3);
+  border-bottom:1px solid var(--parchment-3);
+  padding:10px 4px;margin:12px 0;
+}
+#preview-content p{margin-bottom:.6em;}
+
+/* AI Panel */
+#ai-panel{
+  width:320px;min-width:320px;
+  border-left:1px solid var(--parchment-3);
+  background:#fff;display:flex;flex-direction:column;overflow:hidden;
+}
+.ai-header{
+  padding:12px 14px;
+  background:linear-gradient(135deg,var(--ink-2),var(--accent));
+  color:#fff;display:flex;align-items:center;gap:8px;
+}
+.ai-header h3{
+  font-family:'Cinzel',serif;font-size:.68rem;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;flex:1;
+}
+.btn-close-ai{
+  background:rgba(255,255,255,.15);border:none;
+  width:22px;height:22px;border-radius:var(--radius);
+  color:#fff;font-size:.75rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--transition);
+}
+.btn-close-ai:hover{background:rgba(255,255,255,.3);}
+#ai-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.ai-msg{padding:9px 12px;border-radius:var(--radius);font-size:.82rem;line-height:1.55;max-width:94%;}
+.ai-msg.assistant{background:var(--parchment);border:1px solid var(--parchment-3);align-self:flex-start;font-family:'Cormorant Garamond',serif;font-size:.9rem;}
+.ai-msg.user{background:var(--accent);color:#fff;align-self:flex-end;}
+.ai-msg.loading{background:var(--parchment);border:1px solid var(--parchment-3);align-self:flex-start;display:flex;gap:4px;padding:12px;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--gold-2);animation:bounce 1.2s infinite;}
+.ai-dot:nth-child(2){animation-delay:.2s;}
+.ai-dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(.7);opacity:.5;}40%{transform:scale(1);opacity:1;}}
+.ai-shortcuts{padding:8px 12px;border-top:1px solid var(--parchment-3);display:flex;flex-wrap:wrap;gap:5px;}
+.ai-sc{
+  background:var(--parchment);border:1px solid var(--parchment-3);
+  padding:4px 9px;border-radius:10px;font-size:.68rem;color:var(--ink-4);
+  cursor:pointer;transition:all var(--transition);white-space:nowrap;
+}
+.ai-sc:hover{border-color:var(--gold);color:var(--accent);}
+.ai-input-row{padding:10px 12px;border-top:1px solid var(--parchment-3);display:flex;gap:7px;}
+.ai-input-row textarea{
+  flex:1;border:1px solid var(--parchment-3);border-radius:var(--radius);
+  padding:7px 9px;font-size:.78rem;color:var(--ink);outline:none;
+  resize:none;height:56px;transition:border-color var(--transition);
+}
+.ai-input-row textarea:focus{border-color:var(--gold);}
+.btn-send{
+  background:var(--accent);border:none;
+  width:34px;height:34px;border-radius:var(--radius);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  align-self:flex-end;transition:background var(--transition);flex-shrink:0;
+}
+.btn-send:hover{background:var(--ink-2);}
+.btn-send svg{width:13px;height:13px;}
+
+/* ═══════════════════════════════════════════
+   VIEWER
+═══════════════════════════════════════════ */
+#viewer-content{
+  max-width:740px;margin:0 auto;
+  padding:48px 24px 72px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.35rem;line-height:1.8;color:var(--ink);
+}
+#viewer-content .doc-header{text-align:center;padding-bottom:28px;}
+#viewer-content h1{font-family:'Cinzel',serif;font-size:1.9rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;line-height:1.25;}
+#viewer-content .doc-subtitle{font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:8px;}
+#viewer-content .doc-meta{display:flex;gap:20px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+#viewer-content .doc-meta span{font-family:'Lato',sans-serif;font-size:.68rem;color:var(--ink-4);letter-spacing:.06em;}
+#viewer-content .doc-meta strong{color:var(--accent);}
+#viewer-content .ornament{text-align:center;color:var(--gold-2);font-size:.95rem;letter-spacing:.5em;margin:16px 0 28px;}
+#viewer-content .bible-block{background:#f3ede2;border-left:4px solid var(--gold);padding:18px 22px 16px;margin:20px 0;position:relative;}
+#viewer-content .bible-block::before{content:'\u201C';font-family:'Cinzel',serif;font-size:2.8rem;color:var(--gold);opacity:.28;position:absolute;top:-3px;right:14px;line-height:1;}
+#viewer-content .bible-verse{font-style:italic;font-size:1.15rem;margin-bottom:.45em;}
+#viewer-content .bible-verse:last-child{margin-bottom:0;}
+#viewer-content .bible-verse-ref{font-family:'Lato',sans-serif;font-style:normal;font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:.1em;margin-right:5px;}
+#viewer-content .lead-label{font-family:'Lato',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:9px;}
+#viewer-content h2{font-family:'Cinzel',serif;font-size:.75rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin:40px 0 20px;}
+#viewer-content h2::before,#viewer-content h2::after{content:'';flex:1;height:1px;background:var(--parchment-3);}
+#viewer-content h3{font-family:'Cinzel',serif;font-size:1.15rem;font-weight:600;color:var(--accent);margin:24px 0 3px;}
+#viewer-content .point-tagline{font-family:'Lato',sans-serif;font-size:.72rem;font-weight:300;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);opacity:.75;margin-bottom:14px;display:block;}
+#viewer-content p{margin-bottom:.65em;}
+#viewer-content .impact-quote{text-align:center;font-style:italic;font-size:1.2rem;font-weight:600;color:var(--accent);border-top:1px solid var(--parchment-3);border-bottom:1px solid var(--parchment-3);padding:14px 6px;margin:20px 0;}
+#viewer-content .challenge-block{background:var(--parchment);border:1px solid var(--parchment-3);border-top:3px solid var(--gold);padding:20px 24px;margin-top:32px;}
+#viewer-content .challenge-label{font-family:'Lato',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:10px;}
+
+/* ═══════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════ */
+#login-screen{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100%;padding:40px;
+  background:var(--parchment);
+}
+.login-brand{
+  font-family:'Cinzel',serif;font-size:3rem;font-weight:700;
+  letter-spacing:.18em;color:var(--ink-2);margin-bottom:6px;
+}
+.login-brand span{color:var(--gold);}
+.login-sub{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-4);margin-bottom:52px;}
+.login-card{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-top:3px solid var(--gold);padding:38px 44px;
+  max-width:400px;width:100%;box-shadow:var(--shadow-lg);
+}
+.login-card h2{font-family:'Cinzel',serif;font-size:.95rem;font-weight:600;letter-spacing:.08em;color:var(--ink-2);margin-bottom:6px;}
+.login-card p{font-size:.82rem;color:var(--ink-4);line-height:1.6;margin-bottom:26px;}
+.btn-google{
+  width:100%;background:#fff;border:1px solid var(--parchment-3);
+  padding:11px 18px;border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:.85rem;font-weight:700;color:var(--ink);
+  box-shadow:var(--shadow);transition:all var(--transition);
+}
+.btn-google:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:var(--shadow-lg);}
+.btn-google svg{width:20px;height:20px;}
+
+/* ═══════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(15,13,10,.55);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;padding:20px;
+}
+.modal{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-top:3px solid var(--gold);
+  padding:28px 32px;max-width:480px;width:100%;
+  box-shadow:var(--shadow-lg);
+}
+.modal h3{font-family:'Cinzel',serif;font-size:.9rem;font-weight:600;letter-spacing:.08em;color:var(--ink-2);margin-bottom:6px;}
+.modal p{font-size:.82rem;color:var(--ink-4);line-height:1.6;margin-bottom:18px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast-zone{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:7px;z-index:2000;}
+.toast{
+  background:var(--ink-2);color:#fff;
+  padding:9px 15px;border-radius:var(--radius);
+  font-size:.78rem;font-weight:700;
+  box-shadow:var(--shadow-lg);
+  animation:toastIn .2s ease;
+  display:flex;align-items:center;gap:8px;max-width:300px;
+}
+.toast.success{background:var(--success);}
+.toast.error{background:var(--danger);}
+.toast.info{background:var(--accent);}
+@keyframes toastIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+
+/* ═══════════════════════════════════════════
+   LOADING
+═══════════════════════════════════════════ */
+#loading{
+  position:fixed;inset:0;background:var(--parchment);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:500;gap:14px;
+}
+.spinner{width:32px;height:32px;border:2px solid var(--parchment-3);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-lbl{font-family:'Cinzel',serif;font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+
+/* ═══════════════════════════════════════════
+   VIEWER TOOLBAR (sticky)
+═══════════════════════════════════════════ */
+.viewer-toolbar{
+  position:sticky;top:0;z-index:5;
+  background:#fff;border-bottom:1px solid var(--parchment-3);
+  padding:9px 22px;display:flex;align-items:center;gap:8px;
+}
+
+/* ═══════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════ */
+.empty-state{
+  text-align:center;padding:60px 32px;color:var(--ink-4);
+}
+.empty-state svg{width:44px;height:44px;opacity:.25;margin-bottom:14px;}
+.empty-state h3{font-family:'Cinzel',serif;font-size:.82rem;font-weight:600;letter-spacing:.08em;color:var(--ink-4);margin-bottom:7px;}
+.empty-state p{font-size:.78rem;line-height:1.6;}
+
+/* ═══════════════════════════════════════════
+   SERIES CARDS
+═══════════════════════════════════════════ */
+.series-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.series-card{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);overflow:hidden;
+  cursor:pointer;transition:all var(--transition);
+  box-shadow:var(--shadow-sm);
+}
+.series-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--gold);}
+.series-card-cover{
+  height:140px;background:var(--parchment-2);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.series-card-cover img{width:100%;height:100%;object-fit:cover;}
+.series-card-cover-placeholder{
+  font-family:'Cinzel',serif;font-size:2rem;font-weight:700;
+  color:var(--parchment-3);letter-spacing:.1em;
+}
+.series-card-body{padding:14px 16px 16px;}
+.series-card-title{
+  font-family:'Cinzel',serif;font-size:.88rem;font-weight:600;
+  color:var(--ink-2);margin-bottom:5px;line-height:1.3;
+}
+.series-card-desc{
+  font-size:.78rem;color:var(--ink-4);line-height:1.5;
+  margin-bottom:10px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.series-card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.series-sermon-count{
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--gold);
+}
+.series-card-actions{display:flex;gap:4px;opacity:0;transition:opacity var(--transition);}
+.series-card:hover .series-card-actions{opacity:1;}
+
+/* ═══════════════════════════════════════════
+   BOOK CARDS
+═══════════════════════════════════════════ */
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;}
+.book-card{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);overflow:hidden;
+  transition:all var(--transition);box-shadow:var(--shadow-sm);
+}
+.book-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.book-cover{
+  height:200px;background:linear-gradient(135deg,var(--ink-2),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.book-cover img{width:100%;height:100%;object-fit:cover;}
+.book-cover-placeholder{
+  font-family:'Cinzel',serif;font-size:1rem;font-weight:600;
+  color:rgba(255,255,255,.4);text-align:center;padding:16px;
+  letter-spacing:.06em;line-height:1.4;
+}
+.book-card-body{padding:12px 14px 14px;}
+.book-card-title{
+  font-family:'Cinzel',serif;font-size:.82rem;font-weight:600;
+  color:var(--ink-2);margin-bottom:4px;line-height:1.3;
+}
+.book-card-sub{font-size:.72rem;color:var(--ink-4);margin-bottom:10px;}
+.book-card-actions{display:flex;gap:6px;}
+
+/* ═══════════════════════════════════════════
+   SERIES DETAIL VIEW
+═══════════════════════════════════════════ */
+.series-detail-header{
+  display:flex;gap:24px;align-items:flex-start;
+  padding:24px;background:#fff;border-radius:var(--radius-lg);
+  border:1px solid var(--parchment-3);margin-bottom:20px;
+  box-shadow:var(--shadow-sm);
+}
+.series-detail-cover{
+  width:120px;height:120px;flex-shrink:0;
+  background:var(--parchment-2);border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.series-detail-cover img{width:100%;height:100%;object-fit:cover;}
+.series-detail-info{flex:1;}
+.series-detail-title{
+  font-family:'Cinzel',serif;font-size:1.3rem;font-weight:600;
+  color:var(--ink-2);margin-bottom:6px;
+}
+.series-detail-desc{font-size:.85rem;color:var(--ink-4);line-height:1.6;margin-bottom:12px;}
+.series-detail-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.series-meta-item{font-size:.72rem;color:var(--ink-4);}
+.series-meta-item strong{color:var(--accent);}
+
+/* ═══════════════════════════════════════════
+   IMPORT VIEW
+═══════════════════════════════════════════ */
+.import-dropzone{
+  border:2px dashed var(--parchment-3);
+  border-radius:var(--radius-lg);
+  background:#fff;
+  padding:48px 32px;
+  text-align:center;
+  cursor:pointer;
+  transition:all var(--transition);
+  margin-bottom:24px;
+}
+.import-dropzone:hover,.import-dropzone.drag-over{
+  border-color:var(--gold);background:var(--parchment);
+}
+.import-dropzone svg{width:40px;height:40px;color:var(--parchment-3);margin-bottom:14px;}
+.import-dropzone h3{
+  font-family:'Cinzel',serif;font-size:.88rem;font-weight:600;
+  letter-spacing:.08em;color:var(--ink-3);margin-bottom:6px;
+}
+.import-dropzone p{font-size:.78rem;color:var(--ink-4);line-height:1.6;}
+.import-dropzone .btn{margin-top:16px;}
+
+.import-queue{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.import-item{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.import-item-header{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-bottom:1px solid var(--parchment-3);
+  background:var(--parchment);
+}
+.import-item-icon{
+  width:32px;height:32px;background:var(--gold-3);
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.import-item-icon svg{width:15px;height:15px;color:var(--accent);}
+.import-item-name{font-size:.82rem;font-weight:700;color:var(--ink-2);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.import-status{
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 8px;border-radius:2px;
+  flex-shrink:0;
+}
+.import-status.waiting{background:var(--parchment-3);color:var(--ink-4);}
+.import-status.processing{background:#fff3cd;color:#856404;}
+.import-status.done{background:#d1e7dd;color:#0a3622;}
+.import-status.error{background:#f8d7da;color:#842029;}
+.import-status.skipped{background:var(--parchment-3);color:var(--ink-4);}
+
+.import-item-body{padding:16px;}
+.import-preview-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;
+}
+.import-preview-grid .field-group{margin:0;}
+.import-preview-full{grid-column:span 2;}
+.import-item-actions{
+  display:flex;gap:8px;padding:10px 16px;
+  border-top:1px solid var(--parchment-2);
+  background:var(--parchment);
+}
+
+.import-progress{
+  background:#fff;border:1px solid var(--parchment-3);
+  border-radius:var(--radius-lg);padding:20px 24px;
+  margin-bottom:20px;display:none;
+}
+.import-progress-bar-wrap{
+  background:var(--parchment-3);border-radius:4px;
+  height:6px;margin:12px 0 8px;overflow:hidden;
+}
+.import-progress-bar{
+  height:100%;background:var(--gold);border-radius:4px;
+  transition:width .3s ease;
+}
+.import-progress-text{font-size:.75rem;color:var(--ink-4);}
+
+/* ═══════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════ */
+.hidden{display:none!important;}
+#view-editor{flex-direction:column;}
+.divider{border:none;border-top:1px solid var(--parchment-3);margin:16px 0;}
+.text-gold{color:var(--gold);}
+.text-muted{color:var(--ink-4);}
+.mt-4{margin-top:4px;}.mt-8{margin-top:8px;}.mt-12{margin-top:12px;}
+
+@media(max-width:960px){
+  #preview-pane,#ai-panel{display:none;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .dash-grid{grid-template-columns:1fr;}
+  .dash-grid .span-2{grid-column:span 1;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div style="font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;letter-spacing:.2em;color:var(--ink-2);margin-bottom:4px;">K<span style="color:var(--gold);">T</span>L</div>
+  <div class="spinner"></div>
+  <div class="loading-lbl">Carregando…</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-zone"></div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="hidden">
+  <div class="login-brand">K<span>T</span>L</div>
+  <div class="login-sub">Kḗryxon ton Lógon — Prega a Palavra</div>
+  <div class="login-card">
+    <h2>Acesso ao Sistema</h2>
+    <p>Entre com sua conta Google para acessar sua biblioteca ministerial armazenada no Drive.</p>
+    <button class="btn-google" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Entrar com Google
+    </button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">KTL</div>
+        <div class="brand-tagline">Prega a Palavra</div>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-av" id="user-av">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">—</div>
+        <div class="user-role" id="user-role">Conectando…</div>
+      </div>
+      <button class="btn-logout" onclick="signOut()" title="Sair">✕</button>
+    </div>
+
+    <nav>
+      <div class="nav-section">
+        <div class="nav-label">Principal</div>
+        <div class="nav-item active" id="nav-dashboard" onclick="gotoView('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item" id="nav-sermons" onclick="gotoView('sermons')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Sermões
+          <span class="nav-count" id="nav-count-all">0</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Por tipo</div>
+        <div class="nav-item" id="nav-sermao" onclick="filterAndGoto('sermao')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="10 15 12 17 14 15"/><line x1="12" y1="7" x2="12" y2="17"/></svg>
+          Sermões
+          <span class="nav-count" id="nav-count-sermao">0</span>
+        </div>
+        <div class="nav-item" id="nav-aula" onclick="filterAndGoto('aula')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          Aulas
+          <span class="nav-count" id="nav-count-aula">0</span>
+        </div>
+        <div class="nav-item" id="nav-palestra" onclick="filterAndGoto('palestra')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Palestras
+          <span class="nav-count" id="nav-count-palestra">0</span>
+        </div>
+        <div class="nav-item" id="nav-devocional" onclick="filterAndGoto('devocional')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Devocionais
+          <span class="nav-count" id="nav-count-devocional">0</span>
+        </div>
+        <div class="nav-item" id="nav-estudo" onclick="filterAndGoto('estudo')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Estudos
+          <span class="nav-count" id="nav-count-estudo">0</span>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Biblioteca</div>
+        <div class="nav-item" id="nav-series" onclick="gotoView('series')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Séries
+          <span class="nav-count" id="nav-count-series">0</span>
+        </div>
+        <div class="nav-item" id="nav-books" onclick="gotoView('books')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Livros
+          <span class="nav-count" id="nav-count-books">0</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Ferramentas</div>
+        <div class="nav-item" id="nav-import" onclick="gotoView('import')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Arquivo Histórico
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-new-doc" onclick="newDoc()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo Documento
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main">
+    <div id="topbar">
+      <div class="topbar-breadcrumb">
+        <span>KTL</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current" id="topbar-current">Dashboard</span>
+      </div>
+      <div class="topbar-spacer"></div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar em todos os sermões…" oninput="handleSearch(this.value)">
+      </div>
+      <button class="topbar-btn" onclick="syncDrive()" title="Sincronizar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div id="view-dashboard" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));padding:24px;">
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Dashboard</h2>
+          <p>Visão geral do seu ministério</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-gold" onclick="newDoc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Documento
+          </button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+            <span class="stat-period">Total</span>
+          </div>
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label">Documentos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <span class="stat-period" id="stat-year-label">Este Ano</span>
+          </div>
+          <div class="stat-num" id="stat-year">0</div>
+          <div class="stat-label">Este ano</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <span class="stat-period">Este mês</span>
+          </div>
+          <div class="stat-num" id="stat-month">0</div>
+          <div class="stat-label">Este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/></svg></div>
+            <span class="stat-period">Biblioteca</span>
+          </div>
+          <div class="stat-num" id="stat-sermao-count">0</div>
+          <div class="stat-label">Sermões</div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="dash-grid" style="margin-bottom:16px;">
+
+        <!-- Production chart -->
+        <div class="card span-2">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Produção ao Longo dos Anos
+            </div>
+          </div>
+          <div class="card-body" style="padding-bottom:8px;">
+            <div id="chart-years"><div class="chart-bars" id="chart-bars-inner"></div></div>
+          </div>
+        </div>
+
+        <!-- Type donut -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+              Por Tipo
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <svg class="donut-svg" width="80" height="80" viewBox="0 0 80 80" id="donut-svg">
+                <circle cx="40" cy="40" r="28" fill="none" stroke="#e8ddd0" stroke-width="14"/>
+              </svg>
+              <div class="donut-legend" id="donut-legend"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECOND ROW -->
+      <div class="dash-grid" style="margin-bottom:16px;">
+
+        <!-- Bible map -->
+        <div class="card span-2">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              Mapa da Bíblia
+            </div>
+            <span style="font-size:.62rem;color:var(--ink-4);">Sermões por livro</span>
+          </div>
+          <div class="card-body" style="padding-top:10px;">
+            <div class="bible-map" id="bible-map-container"></div>
+          </div>
+        </div>
+
+        <!-- Recent + themes -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card" style="flex:1;">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recentes
+              </div>
+            </div>
+            <div class="card-body" style="padding-top:4px;">
+              <div class="recent-list" id="recent-list"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9.5" cy="9.5" r="5.5"/><path d="M14 5h7M14 9h7M14 13h4"/></svg>
+                Temas
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="theme-cloud" id="theme-cloud"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /dashboard -->
+
+    <!-- ── SERMONS LIST ── -->
+    <div id="view-sermons" class="hidden" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));padding:24px;">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2 id="sermons-view-title">Todos os Documentos</h2>
+          <p id="sermons-view-sub">Carregando…</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-gold" onclick="newDoc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <select class="filter-select" id="filter-type" onchange="applyFilters()">
+          <option value="">Todos os tipos</option>
+          <option value="sermao">Sermão</option>
+          <option value="aula">Aula</option>
+          <option value="palestra">Palestra</option>
+          <option value="devocional">Devocional</option>
+          <option value="estudo">Estudo</option>
+        </select>
+        <select class="filter-select" id="filter-year" onchange="applyFilters()">
+          <option value="">Todos os anos</option>
+        </select>
+        <select class="filter-select" id="filter-public" onchange="applyFilters()">
+          <option value="">Todo público</option>
+          <option value="congregacao">Congregação</option>
+          <option value="jovens">Jovens</option>
+          <option value="homens">Homens</option>
+          <option value="mulheres">Mulheres</option>
+          <option value="lideres">Líderes</option>
+          <option value="outros">Outros</option>
+        </select>
+        <select class="filter-select" id="filter-series" onchange="applyFilters()">
+          <option value="">Todas as séries</option>
+        </select>
+        <div class="filter-spacer"></div>
+        <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Limpar filtros</button>
+      </div>
+
+      <div class="card">
+        <table class="sermons-table" id="sermons-table">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Texto Base</th>
+              <th>Tema</th>
+              <th>Tipo</th>
+              <th>Data</th>
+              <th>Local</th>
+              <th>Público</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="sermons-tbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /sermons -->
+
+    <!-- ── EDITOR ── -->
+    <div id="view-editor" class="hidden" style="height:calc(100vh - var(--topbar-h));flex-direction:column;">
+      <div class="editor-topbar">
+        <div class="editor-topbar-left">
+          <button class="btn btn-ghost btn-sm" onclick="backFromEditor()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
+            Voltar
+          </button>
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="mode-free-btn" onclick="setMode('free')">Livre</button>
+            <button class="mode-btn" id="mode-struct-btn" onclick="setMode('structured')">Estruturado</button>
+          </div>
+          <select class="type-select" id="editor-type" onchange="onTypeChange()">
+            <option value="sermao">Sermão</option>
+            <option value="aula">Aula</option>
+            <option value="palestra">Palestra</option>
+            <option value="devocional">Devocional</option>
+            <option value="estudo">Estudo</option>
+          </select>
+        </div>
+        <div class="editor-topbar-right">
+          <button class="btn btn-ghost btn-sm" onclick="toggleAI()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            IA
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="previewDoc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Visualizar
+          </button>
+          <button class="btn btn-primary btn-sm" id="save-btn" onclick="saveDoc()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar
+          </button>
+        </div>
+      </div>
+
+      <div class="editor-body">
+        <!-- FREE -->
+        <div id="free-editor" style="flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:13px;">
+          <div class="field-group">
+            <label class="field-label">Título</label>
+            <input type="text" class="field-input title" id="f-title" placeholder="Título do documento…" oninput="updatePreview()">
+          </div>
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Texto-base / Referência</label>
+              <input type="text" class="field-input" id="f-ref" placeholder="Ex: João 15.1-8" oninput="updatePreview()">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Tema / Assunto</label>
+              <input type="text" class="field-input" id="f-theme" placeholder="Ex: Fé, Avivamento…" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Data</label>
+              <input type="date" class="field-input" id="f-date">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Local</label>
+              <input type="text" class="field-input" id="f-local" placeholder="Ex: Igreja Vidas">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Público</label>
+              <select class="field-input" id="f-public">
+                <option value="">— Selecione —</option>
+                <option value="congregacao">Congregação</option>
+                <option value="jovens">Jovens</option>
+                <option value="homens">Homens</option>
+                <option value="mulheres">Mulheres</option>
+                <option value="lideres">Líderes</option>
+                <option value="outros">Outros</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Série (opcional)</label>
+              <input type="text" class="field-input" id="f-series" placeholder="Ex: Série Fé">
+            </div>
+          </div>
+          <div class="field-group" style="flex:1;">
+            <label class="field-label">Conteúdo</label>
+            <textarea class="field-textarea" id="f-content" placeholder="Escreva o conteúdo aqui…&#10;&#10;Use { } para blocos bíblicos destacados:&#10;{v.1 — &quot;O Senhor é o meu pastor...&quot;}" oninput="updatePreview()" style="min-height:420px;"></textarea>
+            <p class="field-hint">Textos entre { } serão formatados como blocos bíblicos.</p>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Notas Pessoais</label>
+            <textarea class="field-input" id="f-notes" placeholder="Notas privadas, contexto, observações…" style="min-height:72px;font-size:.85rem;resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- STRUCTURED -->
+        <div id="structured-editor" class="hidden" style="flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:13px;">
+          <div class="struct-card">
+            <div class="struct-card-header">
+              <div class="struct-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Informações Gerais</div>
+            </div>
+            <div class="struct-card-body">
+              <div class="fields-row" style="margin-bottom:12px;">
+                <div class="field-group" style="flex:2;">
+                  <label class="field-label">Título</label>
+                  <input type="text" class="field-input title" id="s-title" placeholder="Título do documento…" oninput="syncStructPreview()">
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Tipo</label>
+                  <select class="field-input" id="s-type" onchange="document.getElementById('editor-type').value=this.value;">
+                    <option value="sermao">Sermão</option><option value="aula">Aula</option>
+                    <option value="palestra">Palestra</option><option value="devocional">Devocional</option>
+                    <option value="estudo">Estudo</option>
+                  </select>
+                </div>
+              </div>
+              <div class="fields-row" style="margin-bottom:12px;">
+                <div class="field-group"><label class="field-label">Texto-base</label><input type="text" class="field-input" id="s-ref" placeholder="Ex: 1 Pedro 5.5-10" oninput="syncStructPreview()"></div>
+                <div class="field-group"><label class="field-label">Tema / Assunto</label><input type="text" class="field-input" id="s-theme" placeholder="Ex: Humildade"></div>
+              </div>
+              <div class="fields-row">
+                <div class="field-group"><label class="field-label">Data</label><input type="date" class="field-input" id="s-date"></div>
+                <div class="field-group"><label class="field-label">Local</label><input type="text" class="field-input" id="s-local" placeholder="Ex: Igreja Vidas"></div>
+                <div class="field-group">
+                  <label class="field-label">Público</label>
+                  <select class="field-input" id="s-public">
+                    <option value="">— Selecione —</option>
+                    <option value="congregacao">Congregação</option><option value="jovens">Jovens</option>
+                    <option value="homens">Homens</option><option value="mulheres">Mulheres</option>
+                    <option value="lideres">Líderes</option><option value="outros">Outros</option>
+                  </select>
+                </div>
+                <div class="field-group"><label class="field-label">Série</label><input type="text" class="field-input" id="s-series" placeholder="Ex: Série Fé"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="struct-card">
+            <div class="struct-card-header"><div class="struct-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/></svg>Texto-base Bíblico</div></div>
+            <div class="struct-card-body"><textarea class="field-textarea" id="s-base" placeholder="Cole o texto bíblico versículo por versículo…" style="min-height:120px;" oninput="syncStructPreview()"></textarea></div>
+          </div>
+
+          <div class="struct-card">
+            <div class="struct-card-header"><div class="struct-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>Introdução</div></div>
+            <div class="struct-card-body"><textarea class="field-textarea" id="s-intro" placeholder="Texto da introdução…" style="min-height:100px;" oninput="syncStructPreview()"></textarea></div>
+          </div>
+
+          <div class="struct-card">
+            <div class="struct-card-header"><div class="struct-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><polyline points="9 11 12 14 22 4"/></svg>Pontos</div></div>
+            <div class="struct-card-body">
+              <div id="points-container"></div>
+              <button class="btn-add-point" onclick="addPoint()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar Ponto</button>
+            </div>
+          </div>
+
+          <div class="struct-card">
+            <div class="struct-card-header"><div class="struct-card-title">Conclusão</div></div>
+            <div class="struct-card-body"><textarea class="field-textarea" id="s-conclusion" placeholder="Texto da conclusão…" style="min-height:100px;" oninput="syncStructPreview()"></textarea></div>
+          </div>
+
+          <div class="struct-card">
+            <div class="struct-card-header"><div class="struct-card-title">Desafio Final</div></div>
+            <div class="struct-card-body"><textarea class="field-textarea" id="s-challenge" placeholder="Desafio ou aplicação final…" style="min-height:90px;" oninput="syncStructPreview()"></textarea></div>
+          </div>
+
+          <div class="struct-card">
+            <div class="struct-card-header"><div class="struct-card-title">Notas Pessoais</div></div>
+            <div class="struct-card-body"><textarea class="field-textarea" id="s-notes" placeholder="Notas privadas…" style="min-height:72px;"></textarea></div>
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div id="preview-pane">
+          <div class="preview-header"><div class="preview-dot"></div>Pré-visualização</div>
+          <div id="preview-content"><p style="color:var(--ink-4);font-family:'Lato',sans-serif;font-size:.78rem;text-align:center;padding:28px 14px;">Comece a escrever…</p></div>
+        </div>
+
+        <!-- AI -->
+        <div id="ai-panel" class="hidden">
+          <div class="ai-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            <h3>Assistente IA</h3>
+            <button class="btn-close-ai" onclick="toggleAI()">✕</button>
+          </div>
+          <div id="ai-msgs">
+            <div class="ai-msg assistant">Olá! Posso ajudar a estruturar ideias, desenvolver pontos, sugerir ilustrações ou revisar seu texto. Como posso ajudar?</div>
+          </div>
+          <div class="ai-shortcuts">
+            <div class="ai-sc" onclick="aiShort('Sugira uma introdução')">💡 Introdução</div>
+            <div class="ai-sc" onclick="aiShort('Sugira ilustrações')">🎨 Ilustrações</div>
+            <div class="ai-sc" onclick="aiShort('Revise o texto')">✏️ Revisar</div>
+            <div class="ai-sc" onclick="aiShort('Sugira uma conclusão')">🎯 Conclusão</div>
+            <div class="ai-sc" onclick="aiShort('Textos bíblicos relacionados')">📖 Textos</div>
+          </div>
+          <div class="ai-input-row">
+            <textarea id="ai-input" placeholder="Pergunta ou pedido…" onkeydown="aiKey(event)"></textarea>
+            <button class="btn-send" onclick="sendAI()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /editor -->
+
+    <!-- ── VIEWER ── -->
+    <div id="view-viewer" class="hidden" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));">
+      <div class="viewer-toolbar">
+        <button class="btn btn-ghost btn-sm" onclick="backFromViewer()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="editCurrentDoc()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="exportHTML()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar HTML
+        </button>
+      </div>
+      <div id="viewer-content"></div>
+    </div>
+
+    <!-- ── SERIES ── -->
+    <div id="view-series" class="hidden" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));padding:24px;">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Séries</h2>
+          <p id="series-view-sub">Suas séries de pregação</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-gold" onclick="openSeriesModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Série
+          </button>
+        </div>
+      </div>
+      <div id="series-container"></div>
+    </div>
+
+    <!-- ── SERIES DETAIL ── -->
+    <div id="view-series-detail" class="hidden" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));padding:24px;">
+      <div class="viewer-toolbar" style="position:relative;top:auto;margin:-24px -24px 24px;padding:10px 24px;">
+        <button class="btn btn-ghost btn-sm" onclick="gotoView('series')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="15 18 9 12 15 6"/></svg>
+          Séries
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="editCurrentSeries()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar Série
+        </button>
+      </div>
+      <div id="series-detail-content"></div>
+    </div>
+
+    <!-- ── IMPORT ── -->
+    <div id="view-import" class="hidden" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));padding:24px;">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Arquivo Histórico</h2>
+          <p>Importe seus sermões antigos em Word — a IA analisa e estrutura automaticamente</p>
+        </div>
+        <div class="page-header-actions" id="import-actions-top" style="display:none;">
+          <button class="btn btn-ghost" onclick="clearImportQueue()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Limpar fila
+          </button>
+          <button class="btn btn-gold" id="btn-process-all" onclick="processAll()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+            Analisar com IA
+          </button>
+          <button class="btn btn-primary" id="btn-save-all" onclick="saveAllImported()" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            Salvar todos no KTL
+          </button>
+        </div>
+      </div>
+
+      <!-- DROP ZONE -->
+      <div class="import-dropzone" id="import-dropzone"
+           onclick="document.getElementById('import-file-input').click()"
+           ondragover="handleDragOver(event)"
+           ondragleave="handleDragLeave(event)"
+           ondrop="handleDrop(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <h3>Arraste os arquivos Word aqui</h3>
+        <p>Suporta .docx e .doc — selecione quantos quiser de uma vez<br>A IA vai analisar cada arquivo e identificar título, texto-base, tema e pontos</p>
+        <button class="btn btn-ghost" onclick="event.stopPropagation();document.getElementById('import-file-input').click()">
+          Selecionar arquivos
+        </button>
+        <input type="file" id="import-file-input" multiple accept=".docx,.doc" style="display:none;" onchange="handleFileSelect(this.files)">
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="import-progress" id="import-progress">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);">Analisando com IA</span>
+          <span id="import-progress-fraction" style="font-size:.75rem;color:var(--ink-4);font-weight:700;"></span>
+        </div>
+        <div class="import-progress-bar-wrap">
+          <div class="import-progress-bar" id="import-progress-bar" style="width:0%"></div>
+        </div>
+        <div class="import-progress-text" id="import-progress-label">Aguarde…</div>
+      </div>
+
+      <!-- QUEUE -->
+      <div class="import-queue" id="import-queue"></div>
+    </div>
+
+    <!-- ── BOOKS ── -->
+    <div id="view-books" class="hidden" style="overflow-y:auto;height:calc(100vh - var(--topbar-h));padding:24px;">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Livros</h2>
+          <p id="books-view-sub">Seus livros e materiais publicados</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn btn-gold" onclick="openBookModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Livro
+          </button>
+        </div>
+      </div>
+      <div id="books-container"></div>
+    </div>
+
+  </main>
+</div><!-- /app -->
+
+<!-- SERIES MODAL -->
+<div class="modal-overlay hidden" id="modal-series">
+  <div class="modal" style="max-width:520px;">
+    <h3 id="series-modal-title">Nova Série</h3>
+    <p>Crie uma série e todos os sermões com esse nome no campo "Série" serão agrupados automaticamente.</p>
+    <input type="hidden" id="series-modal-id">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="field-group">
+        <label class="field-label">Nome da Série *</label>
+        <input type="text" class="field-input" id="series-modal-name" placeholder="Ex: Série Fé">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Descrição</label>
+        <textarea class="field-input" id="series-modal-desc" placeholder="Descrição breve da série…" style="min-height:72px;resize:vertical;"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">URL da Capa (Google Drive ou link direto)</label>
+        <input type="text" class="field-input" id="series-modal-cover" placeholder="https://drive.google.com/…">
+        <p style="font-size:.68rem;color:var(--ink-4);margin-top:4px;">No Drive: clique com botão direito na imagem → Compartilhar → Copiar link</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-series')">Cancelar</button>
+      <button class="btn btn-danger btn-sm hidden" id="series-modal-delete-btn" onclick="deleteCurrentSeries()">Excluir</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSeries()">Salvar Série</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOK MODAL -->
+<div class="modal-overlay hidden" id="modal-book">
+  <div class="modal" style="max-width:520px;">
+    <h3 id="book-modal-title">Novo Livro</h3>
+    <p>Cadastre um livro ou material publicado com link para download no Google Drive.</p>
+    <input type="hidden" id="book-modal-id">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="field-group">
+        <label class="field-label">Título *</label>
+        <input type="text" class="field-input" id="book-modal-title-input" placeholder="Ex: Comentário do Apocalipse">
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div class="field-group" style="flex:1;">
+          <label class="field-label">Subtítulo</label>
+          <input type="text" class="field-input" id="book-modal-subtitle" placeholder="Ex: Revelação e Esperança">
+        </div>
+        <div class="field-group" style="width:80px;">
+          <label class="field-label">Ano</label>
+          <input type="text" class="field-input" id="book-modal-year" placeholder="2024">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Descrição</label>
+        <textarea class="field-input" id="book-modal-desc" placeholder="Descrição breve do livro…" style="min-height:72px;resize:vertical;"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">URL da Capa (Google Drive)</label>
+        <input type="text" class="field-input" id="book-modal-cover" placeholder="https://drive.google.com/…">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Link de Download (Google Drive)</label>
+        <input type="text" class="field-input" id="book-modal-download" placeholder="https://drive.google.com/…">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Tipo</label>
+        <select class="field-input" id="book-modal-type">
+          <option value="comentario">Comentário Bíblico</option>
+          <option value="devocional">Devocional</option>
+          <option value="homiletica">Homilética</option>
+          <option value="romance">Romance / Drama</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-book')">Cancelar</button>
+      <button class="btn btn-danger btn-sm hidden" id="book-modal-delete-btn" onclick="deleteCurrentBook()">Excluir</button>
+      <button class="btn btn-primary btn-sm" onclick="saveBook()">Salvar Livro</button>
+    </div>
+  </div>
+</div>
+
+<!-- API KEY MODAL -->
+<div class="modal-overlay hidden" id="modal-apikey">
+  <div class="modal">
+    <h3>Chave da API — Claude</h3>
+    <p>Para usar o Assistente IA, insira sua chave da Anthropic. Ela é salva apenas no seu navegador.</p>
+    <div class="field-group">
+      <label class="field-label">API Key</label>
+      <input type="password" class="field-input" id="apikey-input" placeholder="sk-ant-…">
+    </div>
+    <p style="font-size:.72rem;margin-top:6px;">Obtenha em <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold);">console.anthropic.com</a></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-apikey')">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="saveApiKey()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════════
+const CLIENT_ID = '292394954203-qv5a9q70k0buvsphpai4il9qqcp56f9q.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile';
+const API = 'https://www.googleapis.com/drive/v3';
+const UPLOAD = 'https://www.googleapis.com/upload/drive/v3';
+const FOLDER = 'KTL_SermoesApp';
+
+const TYPE_COLORS = {
+  sermao:'#b8973e', aula:'#2e4e6e', palestra:'#5e3a7b',
+  devocional:'#2e6e4a', estudo:'#6b5a2e'
+};
+
+const BIBLE_BOOKS = {
+  AT:[
+    {abbr:'Gn',name:'Gênesis'},{abbr:'Êx',name:'Êxodo'},{abbr:'Lv',name:'Levítico'},
+    {abbr:'Nm',name:'Números'},{abbr:'Dt',name:'Deuteronômio'},{abbr:'Js',name:'Josué'},
+    {abbr:'Jz',name:'Juízes'},{abbr:'Rt',name:'Rute'},{abbr:'1Sm',name:'1 Samuel'},
+    {abbr:'2Sm',name:'2 Samuel'},{abbr:'1Rs',name:'1 Reis'},{abbr:'2Rs',name:'2 Reis'},
+    {abbr:'1Cr',name:'1 Crônicas'},{abbr:'2Cr',name:'2 Crônicas'},{abbr:'Ed',name:'Esdras'},
+    {abbr:'Ne',name:'Neemias'},{abbr:'Et',name:'Ester'},{abbr:'Jó',name:'Jó'},
+    {abbr:'Sl',name:'Salmos'},{abbr:'Pv',name:'Provérbios'},{abbr:'Ec',name:'Eclesiastes'},
+    {abbr:'Ct',name:'Cantares'},{abbr:'Is',name:'Isaías'},{abbr:'Jr',name:'Jeremias'},
+    {abbr:'Lm',name:'Lamentações'},{abbr:'Ez',name:'Ezequiel'},{abbr:'Dn',name:'Daniel'},
+    {abbr:'Os',name:'Oseias'},{abbr:'Jl',name:'Joel'},{abbr:'Am',name:'Amós'},
+    {abbr:'Ob',name:'Obadias'},{abbr:'Jn',name:'Jonas'},{abbr:'Mq',name:'Miquéias'},
+    {abbr:'Na',name:'Naum'},{abbr:'Hc',name:'Habacuque'},{abbr:'Sf',name:'Sofonias'},
+    {abbr:'Ag',name:'Ageu'},{abbr:'Zc',name:'Zacarias'},{abbr:'Ml',name:'Malaquias'}
+  ],
+  NT:[
+    {abbr:'Mt',name:'Mateus'},{abbr:'Mc',name:'Marcos'},{abbr:'Lc',name:'Lucas'},
+    {abbr:'Jo',name:'João'},{abbr:'At',name:'Atos'},{abbr:'Rm',name:'Romanos'},
+    {abbr:'1Co',name:'1 Coríntios'},{abbr:'2Co',name:'2 Coríntios'},{abbr:'Gl',name:'Gálatas'},
+    {abbr:'Ef',name:'Efésios'},{abbr:'Fp',name:'Filipenses'},{abbr:'Cl',name:'Colossenses'},
+    {abbr:'1Ts',name:'1 Tessalonicenses'},{abbr:'2Ts',name:'2 Tessalonicenses'},
+    {abbr:'1Tm',name:'1 Timóteo'},{abbr:'2Tm',name:'2 Timóteo'},{abbr:'Tt',name:'Tito'},
+    {abbr:'Fm',name:'Filemom'},{abbr:'Hb',name:'Hebreus'},{abbr:'Tg',name:'Tiago'},
+    {abbr:'1Pe',name:'1 Pedro'},{abbr:'2Pe',name:'2 Pedro'},{abbr:'1Jo',name:'1 João'},
+    {abbr:'2Jo',name:'2 João'},{abbr:'3Jo',name:'3 João'},{abbr:'Jd',name:'Judas'},
+    {abbr:'Ap',name:'Apocalipse'}
+  ]
+};
+
+const PUBLIC_LABELS = {
+  congregacao:'Congregação',jovens:'Jovens',homens:'Homens',
+  mulheres:'Mulheres',lideres:'Líderes',outros:'Outros','':{toString:()=>'—'}
+};
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+let token = null, userProfile = null, folderId = null;
+let docs = [], currentDoc = null;
+let editorMode = 'free', structPoints = [];
+let currentView = 'dashboard', prevView = 'dashboard';
+let filterType = '', filterYear = '', filterPublic = '', searchQ = '';
+let aiOpen = false;
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    hide('loading');
+    const t = sessionStorage.getItem('ktl_token');
+    if (t) { token = t; loadProfile(); }
+    else show('login-screen');
+  }, 900);
+});
+
+// ═══════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════
+function signIn() {
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID, scope: SCOPES,
+    callback: async r => {
+      if (r.error) { toast('Erro: ' + r.error, 'error'); return; }
+      token = r.access_token;
+      sessionStorage.setItem('ktl_token', token);
+      hide('login-screen'); show('loading');
+      await loadProfile();
+    }
+  }).requestAccessToken();
+}
+
+async function loadProfile() {
+  try {
+    const r = await gFetch('https://www.googleapis.com/oauth2/v3/userinfo');
+    userProfile = await r.json();
+    document.getElementById('user-name').textContent = userProfile.name || userProfile.email;
+    document.getElementById('user-role').textContent = 'Ministério · Drive';
+    const av = document.getElementById('user-av');
+    if (userProfile.picture) av.innerHTML = `<img src="${userProfile.picture}">`;
+    else av.textContent = (userProfile.name||'U')[0];
+    hide('login-screen'); show('app');
+    hide('loading');
+    await initDrive();
+  } catch(e) {
+    hide('loading'); show('login-screen');
+    sessionStorage.removeItem('ktl_token');
+    toast('Sessão expirada. Faça login novamente.', 'error');
+  }
+}
+
+function signOut() {
+  token = null; sessionStorage.removeItem('ktl_token');
+  hide('app'); show('login-screen');
+}
+
+// ═══════════════════════════════════════════════
+//  DRIVE
+// ═══════════════════════════════════════════════
+async function gFetch(url, opts={}) {
+  opts.headers = {...(opts.headers||{}), Authorization:'Bearer '+token};
+  return fetch(url, opts);
+}
+
+async function initDrive() {
+  show('loading');
+  document.querySelector('.loading-lbl').textContent = 'Acessando Drive…';
+  try {
+    await ensureFolder();
+    await Promise.all([loadDocs(), loadSeriesData(), loadBooksData()]);
+  }
+  catch(e) { toast('Erro Drive: '+e.message,'error'); }
+  hide('loading');
+}
+
+async function ensureFolder() {
+  const q = `name='${FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const r = await gFetch(`${API}/files?q=${encodeURIComponent(q)}&fields=files(id)`);
+  const d = await r.json();
+  if (d.files?.length) { folderId = d.files[0].id; return; }
+  const cr = await gFetch(`${API}/files`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name:FOLDER, mimeType:'application/vnd.google-apps.folder'})
+  });
+  folderId = (await cr.json()).id;
+  toast('Pasta KTL criada no Drive!','success');
+}
+
+async function loadDocs() {
+  document.querySelector('.loading-lbl').textContent = 'Carregando documentos…';
+  const q = `'${folderId}' in parents and trashed=false`;
+  const r = await gFetch(`${API}/files?q=${encodeURIComponent(q)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`);
+  const d = await r.json();
+  docs = [];
+  for (const f of (d.files||[])) {
+    try {
+      const c = await gFetch(`${API}/files/${f.id}?alt=media`);
+      const doc = await c.json();
+      doc._driveId = f.id; doc._modified = f.modifiedTime;
+      docs.push(doc);
+    } catch(e){}
+  }
+  refreshAll();
+  document.getElementById('user-role').textContent = `Drive · ${docs.length} doc${docs.length!==1?'s':''}`;
+}
+
+async function saveToDrive(doc) {
+  const body = JSON.stringify(doc);
+  const fname = doc.id + '.json';
+  if (doc._driveId) {
+    await gFetch(`${UPLOAD}/files/${doc._driveId}?uploadType=media`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'}, body
+    });
+  } else {
+    const meta = {name:fname, parents:[folderId]};
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file', new Blob([body],{type:'application/json'}));
+    const r = await gFetch(`${UPLOAD}/files?uploadType=multipart`,{method:'POST',body:form});
+    doc._driveId = (await r.json()).id;
+  }
+}
+
+async function delFromDrive(doc) {
+  if (doc._driveId) await gFetch(`${API}/files/${doc._driveId}`,{method:'DELETE'});
+}
+
+async function syncDrive() {
+  toast('Sincronizando…','info'); await loadDocs(); toast('Sincronizado!','success');
+}
+
+// ═══════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════
+function switchView(id) {
+  ['view-dashboard','view-sermons','view-editor','view-viewer',
+   'view-series','view-series-detail','view-books','view-import'].forEach(v => {
+    const el = document.getElementById(v);
+    if (el) {
+      el.classList.add('hidden');
+      el.style.cssText = el.style.cssText.replace(/display:[^;]+;?/gi, '');
+      el.style.display = 'none';
+    }
+  });
+  const t = document.getElementById(id);
+  if (t) {
+    t.classList.remove('hidden');
+    t.style.display = (id === 'view-editor') ? 'flex' : 'block';
+  }
+  currentView = id.replace('view-','');
+}
+
+function gotoView(view) {
+  switchView('view-' + view);
+  const labels = {
+    dashboard:'Dashboard',sermons:'Sermões',editor:'Editor',
+    viewer:'Visualizar',series:'Séries','series-detail':'Séries',books:'Livros',import:'Arquivo Histórico'
+  };
+  document.getElementById('topbar-current').textContent = labels[view]||view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const nav = document.getElementById('nav-' + view);
+  if (nav) nav.classList.add('active');
+  if (view === 'dashboard') refreshDashboard();
+  if (view === 'sermons') renderSermonsList();
+  if (view === 'series') renderSeriesList();
+  if (view === 'books') renderBooksList();
+}
+
+function filterAndGoto(type) {
+  filterType = type;
+  document.getElementById('filter-type').value = type;
+  const labels = {sermao:'Sermões',aula:'Aulas',palestra:'Palestras',devocional:'Devocionais',estudo:'Estudos'};
+  document.getElementById('sermons-view-title').textContent = labels[type]||'Documentos';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const nav = document.getElementById('nav-'+type);
+  if (nav) nav.classList.add('active');
+  gotoView('sermons');
+}
+
+function backFromEditor() {
+  gotoView(prevView === 'editor' ? 'dashboard' : prevView);
+}
+
+function backFromViewer() {
+  gotoView(prevView === 'viewer' ? 'sermons' : prevView);
+}
+
+function editCurrentDoc() {
+  if (currentDoc) openEditor(currentDoc);
+}
+
+function previewDoc() {
+  collectEditorData();
+  prevView = 'editor';
+  openViewer(currentDoc);
+}
+
+// ═══════════════════════════════════════════════
+//  DOCUMENT CRUD
+// ═══════════════════════════════════════════════
+function newDoc() {
+  currentDoc = {
+    id:'doc_'+Date.now(), type:'sermao', mode:'free',
+    title:'',ref:'',theme:'',date:'',local:'',public:'',series:'',
+    content:'',notes:'',baseText:'',intro:'',points:[],conclusion:'',challenge:'',
+    created:new Date().toISOString(), updated:new Date().toISOString()
+  };
+  prevView = currentView;
+  openEditor(currentDoc);
+}
+
+function openEditor(doc) {
+  currentDoc = doc;
+  editorMode = doc.mode || 'free';
+  // Free
+  document.getElementById('f-title').value = doc.title||'';
+  document.getElementById('f-ref').value = doc.ref||'';
+  document.getElementById('f-theme').value = doc.theme||'';
+  document.getElementById('f-date').value = doc.date||'';
+  document.getElementById('f-local').value = doc.local||'';
+  document.getElementById('f-public').value = doc.public||'';
+  document.getElementById('f-series').value = doc.series||'';
+  document.getElementById('f-content').value = doc.content||'';
+  document.getElementById('f-notes').value = doc.notes||'';
+  // Structured
+  document.getElementById('s-title').value = doc.title||'';
+  document.getElementById('s-ref').value = doc.ref||'';
+  document.getElementById('s-theme').value = doc.theme||'';
+  document.getElementById('s-date').value = doc.date||'';
+  document.getElementById('s-local').value = doc.local||'';
+  document.getElementById('s-public').value = doc.public||'';
+  document.getElementById('s-series').value = doc.series||'';
+  document.getElementById('s-base').value = doc.baseText||'';
+  document.getElementById('s-intro').value = doc.intro||'';
+  document.getElementById('s-conclusion').value = doc.conclusion||'';
+  document.getElementById('s-challenge').value = doc.challenge||'';
+  document.getElementById('s-notes').value = doc.notes||'';
+  document.getElementById('editor-type').value = doc.type||'sermao';
+  structPoints = doc.points ? JSON.parse(JSON.stringify(doc.points)) : [];
+  renderPoints();
+  setMode(editorMode);
+  prevView = currentView;
+  gotoView('editor');
+  updatePreview();
+}
+
+function collectEditorData() {
+  if (!currentDoc) return;
+  currentDoc.type = document.getElementById('editor-type').value;
+  currentDoc.mode = editorMode;
+  if (editorMode === 'free') {
+    currentDoc.title = document.getElementById('f-title').value;
+    currentDoc.ref = document.getElementById('f-ref').value;
+    currentDoc.theme = document.getElementById('f-theme').value;
+    currentDoc.date = document.getElementById('f-date').value;
+    currentDoc.local = document.getElementById('f-local').value;
+    currentDoc.public = document.getElementById('f-public').value;
+    currentDoc.series = document.getElementById('f-series').value;
+    currentDoc.content = document.getElementById('f-content').value;
+    currentDoc.notes = document.getElementById('f-notes').value;
+  } else {
+    currentDoc.title = document.getElementById('s-title').value;
+    currentDoc.ref = document.getElementById('s-ref').value;
+    currentDoc.theme = document.getElementById('s-theme').value;
+    currentDoc.date = document.getElementById('s-date').value;
+    currentDoc.local = document.getElementById('s-local').value;
+    currentDoc.public = document.getElementById('s-public').value;
+    currentDoc.series = document.getElementById('s-series').value;
+    currentDoc.baseText = document.getElementById('s-base').value;
+    currentDoc.intro = document.getElementById('s-intro').value;
+    currentDoc.conclusion = document.getElementById('s-conclusion').value;
+    currentDoc.challenge = document.getElementById('s-challenge').value;
+    currentDoc.notes = document.getElementById('s-notes').value;
+    currentDoc.points = JSON.parse(JSON.stringify(structPoints));
+  }
+}
+
+async function saveDoc() {
+  if (!currentDoc) return;
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  collectEditorData();
+  currentDoc.updated = new Date().toISOString();
+  try {
+    await saveToDrive(currentDoc);
+    const idx = docs.findIndex(d => d.id === currentDoc.id);
+    if (idx >= 0) docs[idx] = currentDoc; else docs.unshift(currentDoc);
+    refreshCounts();
+    toast('Salvo no Drive!','success');
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar';
+}
+
+async function deleteDoc(doc, e) {
+  e.stopPropagation();
+  if (!confirm(`Excluir "${doc.title||'Sem título'}"?`)) return;
+  try {
+    await delFromDrive(doc);
+    docs = docs.filter(d => d.id !== doc.id);
+    renderSermonsList(); refreshCounts();
+    toast('Excluído.','info');
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+}
+
+// ═══════════════════════════════════════════════
+//  EDITOR MODE
+// ═══════════════════════════════════════════════
+function setMode(mode) {
+  editorMode = mode;
+  document.getElementById('mode-free-btn').classList.toggle('active', mode==='free');
+  document.getElementById('mode-struct-btn').classList.toggle('active', mode==='structured');
+  document.getElementById('free-editor').style.display = mode==='free' ? 'flex' : 'none';
+  document.getElementById('structured-editor').style.display = mode==='structured' ? 'flex' : 'none';
+  if (mode==='free') updatePreview(); else syncStructPreview();
+}
+
+function onTypeChange() {
+  document.getElementById('s-type').value = document.getElementById('editor-type').value;
+}
+
+// ═══════════════════════════════════════════════
+//  POINTS (structured)
+// ═══════════════════════════════════════════════
+function addPoint() {
+  structPoints.push({title:'',tagline:'',content:'',bibleBlock:'',impactQuote:''});
+  renderPoints(); syncStructPreview();
+}
+function removePoint(i) { structPoints.splice(i,1); renderPoints(); syncStructPreview(); }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderPoints() {
+  const c = document.getElementById('points-container');
+  c.innerHTML = structPoints.map((p,i) => `
+    <div class="point-card">
+      <div class="point-num">Ponto ${i+1}</div>
+      <button class="btn-rm-point" onclick="removePoint(${i})">✕</button>
+      <div class="field-group" style="margin-bottom:9px;">
+        <label class="field-label">Título</label>
+        <input type="text" class="field-input" style="font-family:'Cinzel',serif;" value="${esc(p.title)}" oninput="structPoints[${i}].title=this.value;syncStructPreview()" placeholder="Título do ponto">
+      </div>
+      <div class="field-group" style="margin-bottom:9px;">
+        <label class="field-label">Tagline</label>
+        <input type="text" class="field-input" value="${esc(p.tagline)}" oninput="structPoints[${i}].tagline=this.value;syncStructPreview()" placeholder="Frase resumo em uppercase">
+      </div>
+      <div class="field-group" style="margin-bottom:9px;">
+        <label class="field-label">Desenvolvimento</label>
+        <textarea class="field-textarea" style="min-height:90px;" oninput="structPoints[${i}].content=this.value;syncStructPreview()" placeholder="Exegese, ilustração, aplicação…">${esc(p.content)}</textarea>
+      </div>
+      <div class="field-group" style="margin-bottom:9px;">
+        <label class="field-label">Bloco bíblico { }</label>
+        <textarea class="field-textarea" style="min-height:60px;font-style:italic;" oninput="structPoints[${i}].bibleBlock=this.value;syncStructPreview()" placeholder="Sl 51.17 — &quot;Sacrifícios agradáveis...&quot;">${esc(p.bibleBlock)}</textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Frase de impacto</label>
+        <input type="text" class="field-input" value="${esc(p.impactQuote)}" oninput="structPoints[${i}].impactQuote=this.value;syncStructPreview()" placeholder="Frase de destaque centralizada">
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  PREVIEW
+// ═══════════════════════════════════════════════
+function updatePreview() {
+  if (editorMode !== 'free') return;
+  const title = document.getElementById('f-title').value;
+  const ref = document.getElementById('f-ref').value;
+  const content = document.getElementById('f-content').value;
+  const type = document.getElementById('editor-type').value;
+  document.getElementById('preview-content').innerHTML = buildPreviewFree(title,ref,type,content);
+}
+
+function syncStructPreview() {
+  const title = document.getElementById('s-title').value;
+  const ref = document.getElementById('s-ref').value;
+  const base = document.getElementById('s-base').value;
+  const intro = document.getElementById('s-intro').value;
+  const concl = document.getElementById('s-conclusion').value;
+  const chal = document.getElementById('s-challenge').value;
+  document.getElementById('preview-content').innerHTML = buildPreviewStruct(title,ref,base,intro,structPoints,concl,chal);
+}
+
+function buildPreviewFree(title,ref,type,content) {
+  let h = '';
+  if (title) h += `<div class="prev-title">${title}</div>`;
+  if (ref) h += `<div class="prev-sub">${ref} · ${type}</div>`;
+  if (title||ref) h += `<div class="prev-orn">✦ ✦ ✦</div>`;
+  const parts = content.split(/(\{[^}]+\})/g);
+  for (const p of parts) {
+    if (p.startsWith('{')&&p.endsWith('}')) {
+      h += `<div class="prev-bible">${parseBibleLines(p.slice(1,-1).trim())}</div>`;
+    } else {
+      for (const line of p.split('\n').filter(l=>l.trim())) {
+        if (/^\d+\.\s/.test(line)) h += `<div class="prev-point">${line}</div>`;
+        else h += `<p>${line}</p>`;
+      }
+    }
+  }
+  return h || '<p style="color:var(--ink-4);font-family:Lato,sans-serif;font-size:.78rem;text-align:center;">Escreva para ver a pré-visualização.</p>';
+}
+
+function buildPreviewStruct(title,ref,base,intro,points,concl,chal) {
+  let h = '';
+  if (title) h += `<div class="prev-title">${title}</div>`;
+  if (ref) h += `<div class="prev-sub">${ref}</div>`;
+  h += `<div class="prev-orn">✦ ✦ ✦</div>`;
+  if (base) h += `<div class="prev-bible">${parseBibleLines(base)}</div>`;
+  if (intro) { h += `<div class="prev-sect">Introdução</div>`; h += `<p>${intro.replace(/\n/g,'</p><p>')}</p>`; }
+  points.forEach((p,i) => {
+    h += `<div class="prev-sect">${i+1}. ${p.title||'Ponto'}</div>`;
+    if (p.content) h += `<p>${p.content.replace(/\n/g,'</p><p>')}</p>`;
+    if (p.bibleBlock) h += `<div class="prev-bible">${parseBibleLines(p.bibleBlock)}</div>`;
+    if (p.impactQuote) h += `<div class="prev-impact">${p.impactQuote}</div>`;
+  });
+  if (concl) { h += `<div class="prev-sect">Conclusão</div>`; h += `<p>${concl.replace(/\n/g,'</p><p>')}</p>`; }
+  if (chal) h += `<div style="background:var(--parchment-2);border-top:2px solid var(--gold);padding:12px 14px;margin-top:12px;font-size:.9rem;"><strong>Desafio:</strong> ${chal}</div>`;
+  return h;
+}
+
+function parseBibleLines(text) {
+  return text.split('\n').filter(l=>l.trim()).map(line => {
+    const m = line.match(/^([A-Za-zÀ-ú0-9\s]+\s\d+[\.:]\d+[-\d]*|v\.\d+[-\d]*)\s*[—–-]\s*/);
+    if (m) return `<p style="font-style:italic;margin-bottom:.4em;"><span style="font-family:Lato,sans-serif;font-size:.62rem;font-weight:700;color:var(--gold);margin-right:4px;">${m[1]}</span>${line.substring(m[0].length)}</p>`;
+    return `<p style="font-style:italic;margin-bottom:.4em;">${line}</p>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  VIEWER
+// ═══════════════════════════════════════════════
+function openViewer(doc) {
+  currentDoc = doc;
+  document.getElementById('viewer-content').innerHTML = renderFullDoc(doc);
+  gotoView('viewer');
+}
+
+function renderFullDoc(doc) {
+  const typeLabel = {sermao:'Sermão',aula:'Aula',palestra:'Palestra',devocional:'Devocional',estudo:'Estudo'}[doc.type]||'';
+  const pubLabel = PUBLIC_LABELS[doc.public||''] || '';
+  let h = `<div class="doc-header"><h1>${doc.title||'Sem título'}</h1>`;
+  const subtitleParts = [doc.ref, doc.series, typeLabel].filter(Boolean);
+  if (subtitleParts.length) h += `<p class="doc-subtitle">${subtitleParts.join(' · ')}</p>`;
+  const metaParts = [];
+  if (doc.date) metaParts.push(`<span><strong>Data:</strong> ${formatDate(doc.date)}</span>`);
+  if (doc.local) metaParts.push(`<span><strong>Local:</strong> ${doc.local}</span>`);
+  if (doc.theme) metaParts.push(`<span><strong>Tema:</strong> ${doc.theme}</span>`);
+  if (pubLabel && pubLabel !== '—') metaParts.push(`<span><strong>Público:</strong> ${pubLabel}</span>`);
+  if (metaParts.length) h += `<div class="doc-meta">${metaParts.join('')}</div>`;
+  h += `</div><div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>`;
+
+  if (doc.mode === 'structured') {
+    if (doc.baseText) h += `<div class="bible-block lead"><span class="lead-label">Texto-base — ${doc.ref||''}</span>${renderBibleFull(doc.baseText)}</div>`;
+    if (doc.intro) h += `<h2>Introdução</h2>${doc.intro.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')}`;
+    (doc.points||[]).forEach((p,i) => {
+      h += `<h2>${i+1}. ${p.title||'Ponto '+(i+1)}</h2>`;
+      if (p.tagline) h += `<span class="point-tagline">${p.tagline}</span>`;
+      if (p.content) h += doc.content = '', p.content.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
+      if (p.bibleBlock) h += `<div class="bible-block">${renderBibleFull(p.bibleBlock)}</div>`;
+      if (p.impactQuote) h += `<blockquote class="impact-quote">${p.impactQuote}</blockquote>`;
+    });
+    if (doc.conclusion) h += `<h2>Conclusão</h2>${doc.conclusion.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')}`;
+    if (doc.challenge) h += `<div class="challenge-block"><span class="challenge-label">Desafio Final</span>${doc.challenge.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')}</div>`;
+  } else {
+    let sc = 0;
+    for (const part of (doc.content||'').split(/(\{[^}]+\})/g)) {
+      if (part.startsWith('{')&&part.endsWith('}')) {
+        const inner = part.slice(1,-1).trim();
+        h += sc===0
+          ? `<div class="bible-block lead"><span class="lead-label">Texto-base — ${doc.ref||''}</span>${renderBibleFull(inner)}</div>`
+          : `<div class="bible-block">${renderBibleFull(inner)}</div>`;
+        sc++;
+      } else {
+        for (const line of part.split('\n').filter(l=>l.trim())) {
+          if (/^\d+\.\s/.test(line)) h += `<h3>${line}</h3>`;
+          else h += `<p>${line}</p>`;
+        }
+      }
+    }
+  }
+  return h;
+}
+
+function renderBibleFull(text) {
+  return text.split('\n').filter(l=>l.trim()).map(line => {
+    const m = line.match(/^([A-Za-zÀ-ú0-9\s]+\s\d+[\.:]\d+[-\d]*|v\.\d+[-\d]*)\s*[—–-]\s*/);
+    if (m) return `<p class="bible-verse"><span class="bible-verse-ref">${m[1].trim()}</span>${line.substring(m[0].length)}</p>`;
+    return `<p class="bible-verse">${line}</p>`;
+  }).join('');
+}
+
+function exportHTML() {
+  if (!currentDoc) return;
+  const body = renderFullDoc(currentDoc);
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${currentDoc.title||'KTL'}</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"><style>:root{--ink:#0f0d0a;--accent:#7b5e3a;--gold:#b8973e;--divider:#d5c4a8;--parchment:#faf6ef;--parchment-2:#f3ece0;--parchment-3:#e8ddd0;}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}body{background:#fff;color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;font-size:1.35rem;line-height:1.8;}.wrap{max-width:740px;margin:0 auto;padding:48px 24px 72px;}.doc-header{text-align:center;padding-bottom:28px;}h1{font-family:'Cinzel',serif;font-size:2rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;line-height:1.25;}.doc-subtitle{font-family:'Lato',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:8px;}.doc-meta{display:flex;gap:16px;justify-content:center;margin-top:8px;flex-wrap:wrap;}.doc-meta span{font-family:'Lato',sans-serif;font-size:.68rem;color:#6b6b6b;}.doc-meta strong{color:var(--accent);}.ornament{text-align:center;color:#c4a882;font-size:.95rem;letter-spacing:.5em;margin:16px 0 28px;}.bible-block{background:#f3ede2;border-left:4px solid var(--gold);padding:18px 22px 16px;margin:20px 0;position:relative;}.bible-block::before{content:'\u201C';font-family:'Cinzel',serif;font-size:2.8rem;color:var(--gold);opacity:.28;position:absolute;top:-3px;right:14px;line-height:1;}.bible-verse{font-style:italic;font-size:1.15rem;margin-bottom:.45em;}.bible-verse-ref{font-family:'Lato',sans-serif;font-style:normal;font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:.1em;margin-right:5px;}.lead-label{font-family:'Lato',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:9px;}h2{font-family:'Cinzel',serif;font-size:.75rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;margin:40px 0 20px;}h2::before,h2::after{content:'';flex:1;height:1px;background:var(--divider);}h3{font-family:'Cinzel',serif;font-size:1.15rem;font-weight:600;color:var(--accent);margin:24px 0 4px;}.point-tagline{font-family:'Lato',sans-serif;font-size:.72rem;font-weight:300;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);opacity:.75;margin-bottom:14px;display:block;}p{margin-bottom:.65em;}.impact-quote{text-align:center;font-style:italic;font-size:1.2rem;font-weight:600;color:var(--accent);border-top:1px solid var(--divider);border-bottom:1px solid var(--divider);padding:14px 6px;margin:20px 0;}.challenge-block{background:var(--parchment);border:1px solid var(--divider);border-top:3px solid var(--gold);padding:20px 24px;margin-top:32px;}.challenge-label{font-family:'Lato',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:10px;}</style></head><body><div class="wrap">${body}</div></body></html>`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+  a.download = (currentDoc.title||'documento').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.html';
+  a.click();
+  toast('HTML exportado!','success');
+}
+
+// ═══════════════════════════════════════════════
+//  SERMONS LIST
+// ═══════════════════════════════════════════════
+let filterSeries = '';
+
+function applyFilters() {
+  filterType = document.getElementById('filter-type').value;
+  filterYear = document.getElementById('filter-year').value;
+  filterPublic = document.getElementById('filter-public').value;
+  filterSeries = document.getElementById('filter-series').value;
+  renderSermonsList();
+}
+
+function clearFilters() {
+  filterType = filterYear = filterPublic = filterSeries = searchQ = '';
+  document.getElementById('filter-type').value = '';
+  document.getElementById('filter-year').value = '';
+  document.getElementById('filter-public').value = '';
+  document.getElementById('filter-series').value = '';
+  document.getElementById('search-input').value = '';
+  renderSermonsList();
+}
+
+function handleSearch(q) {
+  searchQ = q;
+  if (q && currentView !== 'sermons') {
+    // Auto-navigate to sermons list when searching
+    filterType = '';
+    document.getElementById('filter-type').value = '';
+    gotoView('sermons');
+  } else {
+    renderSermonsList();
+  }
+}
+
+function filteredDocs() {
+  return docs.filter(d => {
+    if (filterType && d.type !== filterType) return false;
+    if (filterYear && (!d.date || !d.date.startsWith(filterYear))) return false;
+    if (filterPublic && d.public !== filterPublic) return false;
+    if (filterSeries && (d.series||'').toLowerCase() !== filterSeries.toLowerCase()) return false;
+    if (searchQ) {
+      const q = searchQ.toLowerCase();
+      if (!(d.title||'').toLowerCase().includes(q) &&
+          !(d.ref||'').toLowerCase().includes(q) &&
+          !(d.theme||'').toLowerCase().includes(q) &&
+          !(d.content||'').toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderSermonsList() {
+  // Populate series filter dropdown
+  const seriesSel = document.getElementById('filter-series');
+  if (seriesSel) {
+    const allSeries = [...new Set(docs.map(d=>d.series).filter(Boolean))].sort();
+    const cur = seriesSel.value;
+    seriesSel.innerHTML = '<option value="">Todas as séries</option>' +
+      allSeries.map(s=>`<option value="${s}">${s}</option>`).join('');
+    seriesSel.value = cur;
+  }
+
+  const list = filteredDocs();
+  const tbody = document.getElementById('sermons-tbody');
+  document.getElementById('sermons-view-sub').textContent = `${list.length} documento${list.length!==1?'s':''}`;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg><h3>Nenhum documento</h3><p>Clique em "Novo Documento" para começar.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(d => {
+    const date = d.date ? formatDate(d.date) : '—';
+    const pub = PUBLIC_LABELS[d.public||''] || '—';
+    return `<tr onclick="openViewer(docs.find(x=>x.id==='${d.id}'))">
+      <td class="td-title">${d.title||'<em>Sem título</em>'}</td>
+      <td class="td-ref">${d.ref||'—'}</td>
+      <td class="td-theme">${d.theme||'—'}</td>
+      <td><span class="badge badge-${d.type}">${d.type}</span></td>
+      <td class="td-date">${date}</td>
+      <td style="font-size:.78rem;color:var(--ink-4);">${d.local||'—'}</td>
+      <td style="font-size:.75rem;color:var(--ink-4);">${pub}</td>
+      <td><div class="td-actions">
+        <button class="tbl-btn" onclick="event.stopPropagation();openEditor(docs.find(x=>x.id==='${d.id}'))" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="tbl-btn danger" onclick="deleteDoc(docs.find(x=>x.id==='${d.id}'),event)" title="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════
+function refreshAll() { refreshCounts(); refreshDashboard(); }
+
+function refreshCounts() {
+  const total = docs.length;
+  const now = new Date();
+  const year = now.getFullYear().toString();
+  const month = now.toISOString().substring(0,7);
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-year').textContent = docs.filter(d=>d.date&&d.date.startsWith(year)).length;
+  document.getElementById('stat-month').textContent = docs.filter(d=>d.date&&d.date.startsWith(month)).length;
+  document.getElementById('stat-sermao-count').textContent = docs.filter(d=>d.type==='sermao').length;
+  ['all','sermao','aula','palestra','devocional','estudo'].forEach(t => {
+    const el = document.getElementById('nav-count-'+t);
+    if (el) el.textContent = t==='all' ? total : docs.filter(d=>d.type===t).length;
+  });
+  // Series and books counts
+  const seriesSet = new Set(docs.map(d=>d.series).filter(Boolean));
+  const snEl = document.getElementById('nav-count-series');
+  if (snEl) snEl.textContent = seriesSet.size;
+  const bnEl = document.getElementById('nav-count-books');
+  if (bnEl) bnEl.textContent = books.length;
+
+  // Year filter
+  const years = [...new Set(docs.map(d=>d.date?d.date.substring(0,4):null).filter(Boolean))].sort().reverse();
+  const sel = document.getElementById('filter-year');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todos os anos</option>' + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  sel.value = cur;
+}
+
+function refreshDashboard() {
+  if (currentView !== 'dashboard') return;
+  renderYearChart();
+  renderDonut();
+  renderBibleMap();
+  renderRecentList();
+  renderThemeCloud();
+}
+
+function renderYearChart() {
+  const byYear = {};
+  docs.forEach(d => {
+    if (!d.date) return;
+    let y = null;
+    // YYYY-MM-DD
+    if (/^[0-9]{4}-/.test(d.date)) y = d.date.substring(0,4);
+    // DD/MM/YYYY
+    else if (/^[0-9]{2}\/[0-9]{2}\/([0-9]{4})/.test(d.date)) y = d.date.substring(6,10);
+    // just YYYY
+    else if (/^[0-9]{4}$/.test(d.date)) y = d.date;
+    if (y && /^[0-9]{4}$/.test(y) && parseInt(y) >= 1900 && parseInt(y) <= 2100) byYear[y] = (byYear[y]||0) + 1;
+  });
+  const years = Object.keys(byYear).sort();
+  if (!years.length) {
+    document.getElementById('chart-bars-inner').innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--ink-4);font-size:.78rem;font-family:Lato,sans-serif;">Cadastre sermões com data para ver o gráfico.</div>';
+    return;
+  }
+  const max = Math.max(...Object.values(byYear));
+  const BAR_MAX_H = 120; // px
+  // Fill in missing years for a continuous range
+  const minY = parseInt(years[0]);
+  const maxY = parseInt(years[years.length-1]);
+  const allYears = [];
+  for (let y = minY; y <= maxY; y++) allYears.push(String(y));
+
+  document.getElementById('chart-bars-inner').innerHTML = allYears.map(y => {
+    const count = byYear[y] || 0;
+    const px = count > 0 ? Math.max(6, Math.round((count/max)*BAR_MAX_H)) : 4;
+    const isEmpty = count === 0;
+    return `<div class="chart-bar-wrap">
+      <div class="chart-bar${isEmpty?' empty':''}" style="height:${px}px;">
+        ${count > 0 ? `<div class="chart-bar-tooltip">${y}: ${count} doc${count>1?'s':''}</div>` : ''}
+      </div>
+      <span class="chart-bar-label">${y.substring(2)}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderDonut() {
+  const types = ['sermao','aula','palestra','devocional','estudo'];
+  const total = docs.length || 1;
+  const counts = types.map(t=>docs.filter(d=>d.type===t).length);
+  const colors = Object.values(TYPE_COLORS);
+  const labels = {sermao:'Sermões',aula:'Aulas',palestra:'Palestras',devocional:'Devocionais',estudo:'Estudos'};
+  const r = 28, cx = 40, cy = 40, circ = 2*Math.PI*r;
+  let offset = 0;
+  let paths = '<circle cx="40" cy="40" r="28" fill="none" stroke="#e8ddd0" stroke-width="14"/>';
+  types.forEach((t,i) => {
+    if (!counts[i]) return;
+    const pct = counts[i]/total;
+    const dash = pct*circ;
+    paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colors[i]}" stroke-width="14" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})" opacity="0.85"/>`;
+    offset += dash;
+  });
+  document.getElementById('donut-svg').innerHTML = paths;
+  document.getElementById('donut-legend').innerHTML = types.map((t,i)=>`
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${colors[i]};opacity:.85;"></div>
+      <span class="legend-label">${labels[t]}</span>
+      <span class="legend-val">${counts[i]}</span>
+    </div>`).join('');
+}
+
+function renderBibleMap() {
+  const container = document.getElementById('bible-map-container');
+
+  // Build lookup: normalizedKey -> abbr (handles full names AND abbreviations)
+  const allBooks = [...BIBLE_BOOKS.AT, ...BIBLE_BOOKS.NT];
+  const normalize = s => s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]/g,'');
+
+  const bookLookup = {};
+  allBooks.forEach(b => {
+    // by abbreviation (e.g. "Êx" -> "Êx")
+    bookLookup[normalize(b.abbr)] = b.abbr;
+    // by full name (e.g. "Êxodo" -> "Êx")
+    bookLookup[normalize(b.name)] = b.abbr;
+    // by first word of full name (e.g. "Samuel" -> matches "1Sm"/"2Sm" — skip ambiguous)
+  });
+
+  // Count docs per canonical abbr
+  const bookCounts = {};
+  docs.forEach(d => {
+    const ref = (d.ref||'').trim();
+    if (!ref) return;
+    // Extract book part: everything before the first digit
+    const bookPart = ref.replace(/^(\d+)\s*/, '$1').split(/(?=[0-9](?!\s*[A-Za-zÀ-ú]))/)[0].trim();
+    // Try progressively shorter prefixes to match
+    const candidates = [
+      bookPart,
+      bookPart.split(/[\s.,:]/)[0] + (bookPart.split(/[\s.,:]/)[1] ? ' ' + bookPart.split(/[\s.,:]/)[1] : ''),
+      bookPart.split(/[\s.,:]/)[0]
+    ];
+    for (const c of candidates) {
+      const key = normalize(c);
+      if (bookLookup[key]) {
+        const abbr = bookLookup[key];
+        bookCounts[abbr] = (bookCounts[abbr]||0) + 1;
+        break;
+      }
+    }
+  });
+  const max = Math.max(...Object.values(bookCounts), 1);
+  function levelClass(count) {
+    if (!count) return '';
+    const pct = count/max;
+    if (pct < .2) return 'has-sermons-1';
+    if (pct < .45) return 'has-sermons-2';
+    if (pct < .75) return 'has-sermons-3';
+    return 'has-sermons-4';
+  }
+  function renderSection(label, books) {
+    return `<div>
+      <div class="bible-section-label">${label}</div>
+      <div class="bible-books-grid">${books.map(b=>{
+        const c = bookCounts[b.abbr]||0;
+        return `<div class="bible-book-cell ${levelClass(c)}">
+          <span class="book-abbr">${b.abbr}</span>
+          ${c ? `<span class="book-count">${c}</span>` : ''}
+          <div class="bible-book-tooltip">${b.name}${c?': '+c+' sermão'+(c>1?'s':''):': nenhum'}</div>
+        </div>`;
+      }).join('')}</div>
+    </div>`;
+  }
+  container.innerHTML = renderSection('Antigo Testamento', BIBLE_BOOKS.AT) + renderSection('Novo Testamento', BIBLE_BOOKS.NT);
+}
+
+function renderRecentList() {
+  const recent = docs.slice(0,6);
+  const colors = TYPE_COLORS;
+  document.getElementById('recent-list').innerHTML = recent.length
+    ? recent.map(d=>`<div class="recent-item" onclick="openViewer(docs.find(x=>x.id==='${d.id}'))">
+        <div class="recent-type-dot" style="background:${colors[d.type]||'#888'};"></div>
+        <span class="recent-title">${d.title||'Sem título'}</span>
+        <span class="recent-ref">${d.ref||''}</span>
+        <span class="recent-date">${d.date?formatDate(d.date).substring(0,5):'—'}</span>
+      </div>`).join('')
+    : '<p style="color:var(--ink-4);font-size:.78rem;padding:8px 0;">Nenhum documento ainda.</p>';
+}
+
+function renderThemeCloud() {
+  const themes = {};
+  docs.forEach(d => { if (d.theme) { const t = d.theme.trim(); themes[t]=(themes[t]||0)+1; } });
+  const entries = Object.entries(themes).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  const max = entries[0]?.[1]||1;
+  document.getElementById('theme-cloud').innerHTML = entries.length
+    ? entries.map(([t,c])=>`<span class="theme-tag" style="font-size:${.8+((c/max)*.8)}rem;opacity:${.5+((c/max)*.5)};">${t}</span>`).join('')
+    : '<p style="color:var(--ink-4);font-size:.78rem;">Nenhum tema cadastrado.</p>';
+}
+
+// ═══════════════════════════════════════════════
+//  AI
+// ═══════════════════════════════════════════════
+function toggleAI() {
+  aiOpen = !aiOpen;
+  document.getElementById('ai-panel').style.display = aiOpen ? 'flex' : 'none';
+  if (aiOpen && !localStorage.getItem('ktl_apikey')) openModal('modal-apikey');
+}
+function aiShort(p) { document.getElementById('ai-input').value=p; sendAI(); }
+function aiKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();} }
+
+async function sendAI() {
+  const inp = document.getElementById('ai-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const key = localStorage.getItem('ktl_apikey');
+  if (!key) { openModal('modal-apikey'); return; }
+  collectEditorData();
+  const ctx = currentDoc ? `Tipo:${currentDoc.type} Título:${currentDoc.title} Ref:${currentDoc.ref} Tema:${currentDoc.theme}\nConteúdo:${(currentDoc.content||currentDoc.intro||'').substring(0,600)}` : '';
+  addAiMsg(text,'user'); inp.value='';
+  const load = document.createElement('div');
+  load.className='ai-msg loading';
+  load.innerHTML='<div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>';
+  document.getElementById('ai-msgs').appendChild(load);
+  scrollAI();
+  try {
+    const r = await fetch('https://tkl-api.eneaspr.workers.dev',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        apiKey: key,
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        system:`Você é assistente de homilética e pregação bíblica para um pastor/bispo. Responda em português brasileiro, de forma prática. Contexto atual:\n${ctx}`,
+        messages:[{role:'user',content:text}]
+      })
+    });
+    load.remove();
+    if (!r.ok) { const e=await r.json(); addAiMsg('Erro: '+(e.error?.message||'Verifique sua chave.'),'assistant'); return; }
+    const d = await r.json();
+    addAiMsg(d.content?.[0]?.text||'Sem resposta.','assistant');
+  } catch(e) { load.remove(); addAiMsg('Erro de conexão.','assistant'); }
+}
+
+function addAiMsg(text,role) {
+  const div = document.createElement('div');
+  div.className = `ai-msg ${role}`;
+  div.textContent = text;
+  document.getElementById('ai-msgs').appendChild(div);
+  scrollAI();
+}
+function scrollAI() { const m=document.getElementById('ai-msgs'); m.scrollTop=m.scrollHeight; }
+
+// ═══════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════
+function openModal(id) { const e=document.getElementById(id); if(e){e.classList.remove('hidden');e.style.display='flex';} }
+function closeModal(id) { const e=document.getElementById(id); if(e){e.classList.add('hidden');e.style.display='none';} }
+function saveApiKey() {
+  const k = document.getElementById('apikey-input').value.trim();
+  if (!k) { toast('Insira uma chave válida.','error'); return; }
+  localStorage.setItem('ktl_apikey', k);
+  closeModal('modal-apikey'); toast('Chave salva!','success');
+}
+
+// ═══════════════════════════════════════════════
+//  SERIES
+// ═══════════════════════════════════════════════
+let series = []; // loaded from Drive
+let currentSeries = null;
+
+async function loadSeriesData() {
+  // Series stored as a single JSON file in the Drive folder
+  try {
+    const q = `name='ktl_series.json' and '${folderId}' in parents and trashed=false`;
+    const r = await gFetch(`${API}/files?q=${encodeURIComponent(q)}&fields=files(id)`);
+    const d = await r.json();
+    if (d.files?.length) {
+      const c = await gFetch(`${API}/files/${d.files[0].id}?alt=media`);
+      series = await c.json();
+      series._driveId = d.files[0].id;
+    }
+  } catch(e) { series = []; }
+  refreshCounts();
+}
+
+async function saveSeriesData() {
+  const content = JSON.stringify(series);
+  const fname = 'ktl_series.json';
+  if (series._driveId) {
+    await gFetch(`${UPLOAD}/files/${series._driveId}?uploadType=media`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'}, body:content
+    });
+  } else {
+    const meta = {name:fname, parents:[folderId]};
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file', new Blob([content],{type:'application/json'}));
+    const r = await gFetch(`${UPLOAD}/files?uploadType=multipart`,{method:'POST',body:form});
+    series._driveId = (await r.json()).id;
+  }
+}
+
+function openSeriesModal(s) {
+  currentSeries = s || null;
+  document.getElementById('series-modal-title').textContent = s ? 'Editar Série' : 'Nova Série';
+  document.getElementById('series-modal-id').value = s?.id || '';
+  document.getElementById('series-modal-name').value = s?.name || '';
+  document.getElementById('series-modal-desc').value = s?.desc || '';
+  document.getElementById('series-modal-cover').value = s?.cover || '';
+  const delBtn = document.getElementById('series-modal-delete-btn');
+  if (s) delBtn.classList.remove('hidden'); else delBtn.classList.add('hidden');
+  openModal('modal-series');
+}
+
+function editCurrentSeries() {
+  if (currentSeries) openSeriesModal(currentSeries);
+}
+
+async function saveSeries() {
+  const name = document.getElementById('series-modal-name').value.trim();
+  if (!name) { toast('Informe o nome da série.','error'); return; }
+  const id = document.getElementById('series-modal-id').value || 'series_'+Date.now();
+  const driveId = series._driveId;
+  const obj = {
+    id, name,
+    desc: document.getElementById('series-modal-desc').value.trim(),
+    cover: document.getElementById('series-modal-cover').value.trim(),
+    created: currentSeries?.created || new Date().toISOString()
+  };
+  const idx = series.findIndex ? series.findIndex(s=>s.id===id) : -1;
+  if (idx >= 0) series[idx] = obj; else { if (!Array.isArray(series)) series = []; series.push(obj); }
+  series._driveId = driveId;
+  try {
+    await saveSeriesData();
+    closeModal('modal-series');
+    refreshCounts();
+    renderSeriesList();
+    toast('Série salva!','success');
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+}
+
+async function deleteCurrentSeries() {
+  const id = document.getElementById('series-modal-id').value;
+  if (!id || !confirm('Excluir esta série? Os sermões não serão afetados.')) return;
+  const driveId = series._driveId;
+  series = series.filter(s=>s.id!==id);
+  series._driveId = driveId;
+  try {
+    await saveSeriesData();
+    closeModal('modal-series');
+    refreshCounts();
+    renderSeriesList();
+    toast('Série excluída.','info');
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+}
+
+function renderSeriesList() {
+  const container = document.getElementById('series-container');
+  const seriesArr = Array.isArray(series) ? series : [];
+
+  // Auto-detect series from docs that don't have a series object yet
+  const allSeriesNames = [...new Set(docs.map(d=>d.series).filter(Boolean))];
+  const registeredNames = seriesArr.map(s=>s.name.toLowerCase());
+  const autoSeries = allSeriesNames
+    .filter(n => !registeredNames.includes(n.toLowerCase()))
+    .map(n => ({id:'auto_'+n, name:n, desc:'', cover:'', auto:true}));
+
+  const allSeries = [...seriesArr, ...autoSeries];
+
+  document.getElementById('series-view-sub').textContent =
+    `${allSeries.length} série${allSeries.length!==1?'s':''}`;
+
+  if (!allSeries.length) {
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <h3>Nenhuma série ainda</h3>
+      <p>Clique em "Nova Série" para criar, ou cadastre sermões com o campo "Série" preenchido.</p>
+    </div>`; return;
+  }
+
+  container.innerHTML = `<div class="series-grid">${allSeries.map(s => {
+    const count = docs.filter(d=>d.series&&d.series.toLowerCase()===s.name.toLowerCase()).length;
+    const coverUrl = s.cover ? driveImageUrl(s.cover) : '';
+    return `<div class="series-card" onclick="openSeriesDetail('${s.id}','${encodeURIComponent(s.name)}')">
+      <div class="series-card-cover">
+        ${coverUrl
+          ? `<img src="${coverUrl}" alt="${s.name}" onerror="this.style.display='none'">`
+          : `<div class="series-card-cover-placeholder">${s.name.charAt(0)}</div>`}
+      </div>
+      <div class="series-card-body">
+        <div class="series-card-title">${s.name}</div>
+        ${s.desc ? `<div class="series-card-desc">${s.desc}</div>` : ''}
+        <div class="series-card-footer">
+          <span class="series-sermon-count">${count} sermão${count!==1?'s':''}</span>
+          <div class="series-card-actions">
+            ${!s.auto ? `<button class="tbl-btn" onclick="event.stopPropagation();openSeriesModal(series.find(x=>x.id==='${s.id}'))" title="Editar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function openSeriesDetail(id, encodedName) {
+  const name = decodeURIComponent(encodedName);
+  const s = (Array.isArray(series) ? series : []).find(x=>x.id===id) || {id, name, desc:'', cover:''};
+  currentSeries = s;
+  const sermonList = docs.filter(d=>d.series&&d.series.toLowerCase()===name.toLowerCase());
+  const coverUrl = s.cover ? driveImageUrl(s.cover) : '';
+
+  document.getElementById('series-detail-content').innerHTML = `
+    <div class="series-detail-header">
+      <div class="series-detail-cover">
+        ${coverUrl
+          ? `<img src="${coverUrl}" alt="${name}" onerror="this.parentElement.innerHTML='<div style=\"font-family:Cinzel,serif;font-size:2rem;font-weight:700;color:var(--parchment-3);\">${name.charAt(0)}</div>'">`
+          : `<div style="font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:var(--parchment-3);">${name.charAt(0)}</div>`}
+      </div>
+      <div class="series-detail-info">
+        <div class="series-detail-title">${name}</div>
+        ${s.desc ? `<div class="series-detail-desc">${s.desc}</div>` : ''}
+        <div class="series-detail-meta">
+          <span class="series-meta-item"><strong>${sermonList.length}</strong> sermão${sermonList.length!==1?'s':''}</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <table class="sermons-table">
+        <thead><tr>
+          <th>Título</th><th>Texto Base</th><th>Tema</th><th>Tipo</th><th>Data</th><th>Local</th><th></th>
+        </tr></thead>
+        <tbody>${sermonList.length ? sermonList.map(d => `
+          <tr onclick="openViewer(docs.find(x=>x.id==='${d.id}'))">
+            <td class="td-title">${d.title||'<em>Sem título</em>'}</td>
+            <td class="td-ref">${d.ref||'—'}</td>
+            <td class="td-theme">${d.theme||'—'}</td>
+            <td><span class="badge badge-${d.type}">${d.type}</span></td>
+            <td class="td-date">${d.date?formatDate(d.date):'—'}</td>
+            <td style="font-size:.78rem;color:var(--ink-4);">${d.local||'—'}</td>
+            <td><div class="td-actions">
+              <button class="tbl-btn" onclick="event.stopPropagation();openEditor(docs.find(x=>x.id==='${d.id}'))" title="Editar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+            </div></td>
+          </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--ink-4);font-size:.82rem;">Nenhum sermão vinculado a esta série.</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+  gotoView('series-detail');
+}
+
+// ═══════════════════════════════════════════════
+//  BOOKS
+// ═══════════════════════════════════════════════
+let books = [];
+let currentBook = null;
+
+async function loadBooksData() {
+  try {
+    const q = `name='ktl_books.json' and '${folderId}' in parents and trashed=false`;
+    const r = await gFetch(`${API}/files?q=${encodeURIComponent(q)}&fields=files(id)`);
+    const d = await r.json();
+    if (d.files?.length) {
+      const c = await gFetch(`${API}/files/${d.files[0].id}?alt=media`);
+      books = await c.json();
+      books._driveId = d.files[0].id;
+    }
+  } catch(e) { books = []; }
+  refreshCounts();
+}
+
+async function saveBooksData() {
+  const content = JSON.stringify(books);
+  const fname = 'ktl_books.json';
+  if (books._driveId) {
+    await gFetch(`${UPLOAD}/files/${books._driveId}?uploadType=media`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'}, body:content
+    });
+  } else {
+    const meta = {name:fname, parents:[folderId]};
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(meta)],{type:'application/json'}));
+    form.append('file', new Blob([content],{type:'application/json'}));
+    const r = await gFetch(`${UPLOAD}/files?uploadType=multipart`,{method:'POST',body:form});
+    books._driveId = (await r.json()).id;
+  }
+}
+
+function openBookModal(b) {
+  currentBook = b || null;
+  document.getElementById('book-modal-title').textContent = b ? 'Editar Livro' : 'Novo Livro';
+  document.getElementById('book-modal-id').value = b?.id || '';
+  document.getElementById('book-modal-title-input').value = b?.title || '';
+  document.getElementById('book-modal-subtitle').value = b?.subtitle || '';
+  document.getElementById('book-modal-year').value = b?.year || '';
+  document.getElementById('book-modal-desc').value = b?.desc || '';
+  document.getElementById('book-modal-cover').value = b?.cover || '';
+  document.getElementById('book-modal-download').value = b?.download || '';
+  document.getElementById('book-modal-type').value = b?.type || 'comentario';
+  const delBtn = document.getElementById('book-modal-delete-btn');
+  if (b) delBtn.classList.remove('hidden'); else delBtn.classList.add('hidden');
+  openModal('modal-book');
+}
+
+async function saveBook() {
+  const title = document.getElementById('book-modal-title-input').value.trim();
+  if (!title) { toast('Informe o título do livro.','error'); return; }
+  const id = document.getElementById('book-modal-id').value || 'book_'+Date.now();
+  const driveId = books._driveId;
+  const obj = {
+    id, title,
+    subtitle: document.getElementById('book-modal-subtitle').value.trim(),
+    year: document.getElementById('book-modal-year').value.trim(),
+    desc: document.getElementById('book-modal-desc').value.trim(),
+    cover: document.getElementById('book-modal-cover').value.trim(),
+    download: document.getElementById('book-modal-download').value.trim(),
+    type: document.getElementById('book-modal-type').value,
+    created: currentBook?.created || new Date().toISOString()
+  };
+  if (!Array.isArray(books)) books = [];
+  const idx = books.findIndex(b=>b.id===id);
+  if (idx >= 0) books[idx] = obj; else books.push(obj);
+  books._driveId = driveId;
+  try {
+    await saveBooksData();
+    closeModal('modal-book');
+    refreshCounts();
+    renderBooksList();
+    toast('Livro salvo!','success');
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+}
+
+async function deleteCurrentBook() {
+  const id = document.getElementById('book-modal-id').value;
+  if (!id || !confirm('Excluir este livro?')) return;
+  const driveId = books._driveId;
+  books = books.filter(b=>b.id!==id);
+  books._driveId = driveId;
+  try {
+    await saveBooksData();
+    closeModal('modal-book');
+    refreshCounts();
+    renderBooksList();
+    toast('Livro excluído.','info');
+  } catch(e) { toast('Erro: '+e.message,'error'); }
+}
+
+const BOOK_TYPE_LABELS = {
+  comentario:'Comentário Bíblico',devocional:'Devocional',
+  homiletica:'Homilética',romance:'Romance / Drama',outro:'Outro'
+};
+
+function renderBooksList() {
+  const container = document.getElementById('books-container');
+  const booksArr = Array.isArray(books) ? books : [];
+  document.getElementById('books-view-sub').textContent =
+    `${booksArr.length} livro${booksArr.length!==1?'s':''} publicado${booksArr.length!==1?'s':''}`;
+
+  if (!booksArr.length) {
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <h3>Nenhum livro cadastrado</h3>
+      <p>Clique em "Novo Livro" para cadastrar seus livros e materiais publicados.</p>
+    </div>`; return;
+  }
+
+  container.innerHTML = `<div class="books-grid">${booksArr.map(b => {
+    const coverUrl = b.cover ? driveImageUrl(b.cover) : '';
+    return `<div class="book-card">
+      <div class="book-cover">
+        ${coverUrl
+          ? `<img src="${coverUrl}" alt="${b.title}" onerror="this.style.display='none'">`
+          : `<div class="book-cover-placeholder">${b.title}</div>`}
+      </div>
+      <div class="book-card-body">
+        <div class="book-card-title">${b.title}</div>
+        <div class="book-card-sub">${[BOOK_TYPE_LABELS[b.type]||b.type, b.year].filter(Boolean).join(' · ')}</div>
+        <div class="book-card-actions">
+          ${b.download ? `<a href="${b.download}" target="_blank" class="btn btn-primary btn-xs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </a>` : ''}
+          <button class="btn btn-ghost btn-xs" onclick="openBookModal(books.find(b=>b.id==='${b.id}'))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// Convert Google Drive share URL to direct image URL
+function driveImageUrl(url) {
+  if (!url) return '';
+  // Already a direct URL
+  if (!url.includes('drive.google.com')) return url;
+  // Extract file ID from various Drive URL formats
+  const m = url.match(/[-\w]{25,}/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[0]}&sz=w400`;
+  return url;
+}
+
+// ═══════════════════════════════════════════════
+//  IMPORT / ARQUIVO HISTÓRICO
+// ═══════════════════════════════════════════════
+let importQueue = []; // {id, file, name, status, rawText, parsed}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('import-dropzone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  document.getElementById('import-dropzone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('import-dropzone').classList.remove('drag-over');
+  handleFileSelect(e.dataTransfer.files);
+}
+
+async function handleFileSelect(files) {
+  if (!files || !files.length) return;
+  for (const file of Array.from(files)) {
+    if (!file.name.match(/\.docx?$/i)) continue;
+    const id = 'imp_' + Date.now() + '_' + Math.random().toString(36).substring(2,7);
+    importQueue.push({id, file, name: file.name, status: 'waiting', rawText: '', parsed: null});
+  }
+  renderImportQueue();
+  document.getElementById('import-actions-top').style.display = 'flex';
+  document.getElementById('btn-process-all').style.display = '';
+  document.getElementById('btn-save-all').style.display = 'none';
+}
+
+async function extractDocxText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const result = await mammoth.extractRawText({arrayBuffer: e.target.result});
+        resolve(result.value);
+      } catch(err) { reject(err); }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+async function processAll() {
+  const key = localStorage.getItem('ktl_apikey');
+  if (!key) { openModal('modal-apikey'); return; }
+
+  const waiting = importQueue.filter(i => i.status === 'waiting');
+  if (!waiting.length) { toast('Nenhum arquivo para processar.','info'); return; }
+
+  document.getElementById('btn-process-all').disabled = true;
+  const prog = document.getElementById('import-progress');
+  prog.style.display = 'block';
+
+  let done = 0;
+  const total = waiting.length;
+
+  for (const item of waiting) {
+    item.status = 'processing';
+    renderImportItem(item);
+    updateProgress(done, total, `Analisando: ${item.name}`);
+
+    try {
+      // Extract text
+      item.rawText = await extractDocxText(item.file);
+      if (!item.rawText.trim()) { item.status = 'error'; item.error = 'Arquivo vazio ou ilegível.'; renderImportItem(item); done++; continue; }
+
+      // Send to Claude
+      item.parsed = await analyzeWithAI(item.rawText, item.name, key);
+      item.status = 'done';
+    } catch(e) {
+      item.status = 'error';
+      item.error = e.message || 'Erro desconhecido.';
+    }
+
+    done++;
+    renderImportItem(item);
+    updateProgress(done, total, done < total ? `Analisando: ${waiting[done]?.name||''}` : 'Concluído!');
+  }
+
+  document.getElementById('btn-process-all').disabled = false;
+  prog.style.display = 'none';
+
+  const hasDone = importQueue.some(i => i.status === 'done');
+  if (hasDone) {
+    document.getElementById('btn-save-all').style.display = '';
+    toast(`${done} arquivo${done!==1?'s':''} analisado${done!==1?'s':''}!`, 'success');
+  }
+}
+
+function updateProgress(done, total, label) {
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('import-progress-bar').style.width = pct + '%';
+  document.getElementById('import-progress-fraction').textContent = `${done}/${total}`;
+  document.getElementById('import-progress-label').textContent = label;
+}
+
+async function analyzeWithAI(text, filename, apiKey) {
+  const truncated = text.substring(0, 3000);
+  const prompt = `Você é um assistente especializado em homilética. Analise o texto abaixo de um sermão e extraia as informações em JSON.
+
+Nome do arquivo: ${filename}
+
+Texto:
+${truncated}
+
+Retorne SOMENTE um JSON válido (sem markdown, sem explicações) com esta estrutura:
+{
+  "title": "título do sermão",
+  "ref": "texto-base bíblico (ex: João 3:16 ou Salmos 23)",
+  "theme": "tema ou assunto principal em 1-3 palavras",
+  "type": "sermao",
+  "date": "",
+  "local": "",
+  "series": "",
+  "content": "texto completo do sermão preservado integralmente"
+}
+
+Regras:
+- title: extraia o título real se existir, senão crie um baseado no conteúdo
+- ref: apenas a referência bíblica principal (ex: "João 15.1-8")
+- theme: tema teológico central em poucas palavras
+- content: o texto completo sem modificações
+- date/local/series: deixe vazio se não encontrar`;
+
+  const res = await fetch('https://tkl-api.eneaspr.workers.dev', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      apiKey: apiKey,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 4000,
+      system: 'Você extrai dados de sermões e retorna apenas JSON válido.',
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || 'Erro na API');
+  }
+
+  const data = await res.json();
+  const raw = data.content?.[0]?.text || '{}';
+  // Strip markdown if present
+  const clean = raw.replace(/```json\n?/gi,'').replace(/```/g,'').trim();
+  return JSON.parse(clean);
+}
+
+function renderImportQueue() {
+  const container = document.getElementById('import-queue');
+  container.innerHTML = importQueue.map(item => renderImportItemHTML(item)).join('');
+}
+
+function renderImportItem(item) {
+  const el = document.getElementById('import-item-' + item.id);
+  if (el) el.outerHTML = renderImportItemHTML(item);
+  else renderImportQueue();
+}
+
+function renderImportItemHTML(item) {
+  const statusLabels = {waiting:'Aguardando',processing:'Analisando…',done:'Analisado',error:'Erro',skipped:'Salvo no KTL'};
+  const p = item.parsed;
+
+  return `<div class="import-item" id="import-item-${item.id}">
+    <div class="import-item-header">
+      <div class="import-item-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <span class="import-item-name">${item.name}</span>
+      <span class="import-status ${item.status}">${statusLabels[item.status]||item.status}</span>
+    </div>
+    ${item.status === 'done' && p ? `
+    <div class="import-item-body">
+      <div class="import-preview-grid">
+        <div class="field-group import-preview-full">
+          <label class="field-label">Título</label>
+          <input type="text" class="field-input title" value="${escHtml(p.title||'')}" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.title=this.value">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Texto-base</label>
+          <input type="text" class="field-input" value="${escHtml(p.ref||'')}" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.ref=this.value">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tema</label>
+          <input type="text" class="field-input" value="${escHtml(p.theme||'')}" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.theme=this.value">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Data</label>
+          <input type="date" class="field-input" value="${escHtml(p.date||'')}" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.date=this.value">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Local</label>
+          <input type="text" class="field-input" value="${escHtml(p.local||'')}" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.local=this.value">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Série</label>
+          <input type="text" class="field-input" value="${escHtml(p.series||'')}" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.series=this.value">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Público</label>
+          <select class="field-input" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.public=this.value">
+            <option value="" ${!p.public?'selected':''}>— Selecione —</option>
+            <option value="congregacao" ${p.public==='congregacao'?'selected':''}>Congregação</option>
+            <option value="jovens" ${p.public==='jovens'?'selected':''}>Jovens</option>
+            <option value="homens" ${p.public==='homens'?'selected':''}>Homens</option>
+            <option value="mulheres" ${p.public==='mulheres'?'selected':''}>Mulheres</option>
+            <option value="lideres" ${p.public==='lideres'?'selected':''}>Líderes</option>
+            <option value="outros" ${p.public==='outros'?'selected':''}>Outros</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Tipo</label>
+          <select class="field-input" onchange="importQueue.find(i=>i.id==='${item.id}').parsed.type=this.value">
+            ${['sermao','aula','palestra','devocional','estudo'].map(t=>`<option value="${t}" ${(p.type||'sermao')===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="import-item-actions">
+        <button class="btn btn-primary btn-sm" onclick="saveSingleImport('${item.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          Salvar no KTL
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="skipImportItem('${item.id}')">Ignorar</button>
+      </div>
+    </div>` : ''}
+    ${item.status === 'error' ? `<div style="padding:12px 16px;font-size:.78rem;color:var(--danger);">Erro: ${item.error||'Falha ao processar.'}</div>` : ''}
+    ${item.status === 'skipped' ? `<div style="padding:10px 16px;font-size:.75rem;color:var(--ink-4);">Sermão salvo com sucesso no KTL! ✓</div>` : ''}
+  </div>`;
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function saveSingleImport(id) {
+  const item = importQueue.find(i => i.id === id);
+  if (!item || !item.parsed) return;
+  const doc = {
+    id: 'doc_' + Date.now() + '_' + Math.random().toString(36).substring(2,6),
+    mode: 'free',
+    type: item.parsed.type || 'sermao',
+    title: item.parsed.title || '',
+    ref: item.parsed.ref || '',
+    theme: item.parsed.theme || '',
+    date: item.parsed.date || '',
+    local: item.parsed.local || '',
+    series: item.parsed.series || '',
+    public: item.parsed.public || '',
+    content: item.parsed.content || item.rawText,
+    notes: `Importado de: ${item.name}`,
+    baseText:'',intro:'',points:[],conclusion:'',challenge:'',
+    created: new Date().toISOString(),
+    updated: new Date().toISOString()
+  };
+  try {
+    await saveToDrive(doc);
+    docs.unshift(doc);
+    item.status = 'skipped';
+    item.parsed = null;
+    renderImportItem(item);
+    refreshCounts();
+    toast(`"${doc.title||item.name}" salvo!`, 'success');
+  } catch(e) { toast('Erro ao salvar: ' + e.message, 'error'); }
+}
+
+async function saveAllImported() {
+  const ready = importQueue.filter(i => i.status === 'done' && i.parsed);
+  if (!ready.length) { toast('Nenhum arquivo pronto para salvar.','info'); return; }
+  const btn = document.getElementById('btn-save-all');
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+  let saved = 0;
+  for (const item of ready) {
+    try { await saveSingleImport(item.id); saved++; }
+    catch(e) {}
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salvar todos no KTL';
+  toast(`${saved} sermão${saved!==1?'s':''} salvo${saved!==1?'s':''} no KTL!`, 'success');
+}
+
+function skipImportItem(id) {
+  const item = importQueue.find(i => i.id === id);
+  if (item) { item.status = 'skipped'; renderImportItem(item); }
+}
+
+function clearImportQueue() {
+  importQueue = [];
+  renderImportQueue();
+  document.getElementById('import-actions-top').style.display = 'none';
+  document.getElementById('import-progress').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-zone').appendChild(el);
+  setTimeout(()=>el.remove(), 3200);
+}
+
+// ═══════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════
+function show(id) { const e=typeof id==='string'?document.getElementById(id):id; if(e){e.style.display='';e.classList.remove('hidden');} }
+function hide(id) { const e=typeof id==='string'?document.getElementById(id):id; if(e){e.style.display='none';e.classList.add('hidden');} }
+function formatDate(s) { if(!s) return '—'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+</script>
+</body>
+</html>

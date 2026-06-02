@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KTL">
+<meta name="theme-color" content="#12100e">
+<title>KTL · Consulta</title>
+<!-- PWA icon embutido como SVG convertido para PNG via canvas -->
+<link rel="apple-touch-icon" id="apple-icon" href="">
+<link rel="icon" id="favicon" href="">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+// Gera ícone KTL dourado via canvas e seta como apple-touch-icon
+(function() {
+  try {
+    const c = document.createElement('canvas');
+    c.width = 512; c.height = 512;
+    const ctx = c.getContext('2d');
+    // Background
+    const bg = ctx.createLinearGradient(0,0,512,512);
+    bg.addColorStop(0, '#1c1916');
+    bg.addColorStop(1, '#12100e');
+    ctx.fillStyle = bg;
+    ctx.roundRect(0,0,512,512,80);
+    ctx.fill();
+    // Gold border
+    ctx.strokeStyle = 'rgba(201,168,76,0.4)';
+    ctx.lineWidth = 12;
+    ctx.roundRect(6,6,500,500,76);
+    ctx.stroke();
+    // KTL text
+    ctx.fillStyle = '#c9a84c';
+    ctx.font = 'bold 200px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('KTL', 256, 230);
+    // Tagline
+    ctx.fillStyle = 'rgba(201,168,76,0.5)';
+    ctx.font = '42px serif';
+    ctx.fillText('PREGA A PALAVRA', 256, 350);
+    // Gold dot
+    ctx.fillStyle = '#c9a84c';
+    ctx.beginPath();
+    ctx.arc(256, 420, 12, 0, Math.PI*2);
+    ctx.fill();
+    const url = c.toDataURL('image/png');
+    document.getElementById('apple-icon').href = url;
+    document.getElementById('favicon').href = url;
+    // Also set manifest with icon
+    const manifest = {
+      name: 'KTL Consulta',
+      short_name: 'KTL',
+      start_url: './mobile.html',
+      display: 'standalone',
+      background_color: '#12100e',
+      theme_color: '#12100e',
+      icons: [{ src: url, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+    const murl = URL.createObjectURL(blob);
+    const ml = document.createElement('link');
+    ml.rel = 'manifest'; ml.href = murl;
+    document.head.appendChild(ml);
+  } catch(e) {}
+})();
+</script>
+<style>
+:root {
+  --bg:        #12100e;
+  --bg2:       #1c1916;
+  --bg3:       #26221e;
+  --bg4:       #322d28;
+  --gold:      #c9a84c;
+  --gold2:     #e8c96a;
+  --gold3:     #f5e4a8;
+  --text:      #f0ebe3;
+  --text2:     #b8ae9e;
+  --text3:     #7a7060;
+  --accent:    #9b6c3a;
+  --danger:    #c0392b;
+  --r:         14px;
+  --r-sm:      8px;
+  --safe-top:  env(safe-area-inset-top, 0px);
+  --safe-bot:  env(safe-area-inset-bottom, 0px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* ── STATUS BAR AREA ── */
+#status-bar {
+  height: calc(var(--safe-top) + 0px);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+/* ── TOP NAV ── */
+#topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: var(--bg);
+  border-bottom: 1px solid rgba(201,168,76,.12);
+  flex-shrink: 0;
+  gap: 12px;
+}
+.nav-brand {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-brand-dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.user-av {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1.5px solid var(--bg4);
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; color: var(--gold);
+  flex-shrink: 0;
+}
+.user-av img { width: 100%; height: 100%; object-fit: cover; }
+.btn-sync {
+  background: none; border: 1px solid var(--bg4);
+  width: 32px; height: 32px; border-radius: var(--r-sm);
+  color: var(--text3); display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.btn-sync:hover, .btn-sync:active { border-color: var(--gold); color: var(--gold); }
+.btn-sync svg { width: 14px; height: 14px; }
+.btn-sync.spinning svg { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PAGES ── */
+#pages { flex: 1; overflow: hidden; position: relative; }
+.page {
+  position: absolute; inset: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transition: transform .28s cubic-bezier(.4,0,.2,1), opacity .28s;
+  padding-bottom: calc(60px + var(--safe-bot) + 16px);
+}
+.page.hidden { transform: translateX(100%); opacity: 0; pointer-events: none; }
+.page.slide-left { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+
+/* ── BOTTOM NAV ── */
+#bottomnav {
+  display: flex;
+  background: var(--bg2);
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding-bottom: var(--safe-bot);
+  flex-shrink: 0;
+}
+.bnav-item {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px;
+  padding: 10px 0;
+  color: var(--text3);
+  font-size: .6rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+  transition: color .15s;
+  border: none; background: none;
+}
+.bnav-item svg { width: 20px; height: 20px; }
+.bnav-item.active { color: var(--gold); }
+.bnav-item.active svg { filter: drop-shadow(0 0 6px rgba(201,168,76,.4)); }
+
+/* ── LOGIN ── */
+#login-screen {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 28px;
+  gap: 0;
+}
+.login-glow {
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(201,168,76,.18) 0%, transparent 70%);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+}
+.login-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 2.8rem; font-weight: 700;
+  letter-spacing: .2em; color: var(--gold);
+  text-shadow: 0 0 32px rgba(201,168,76,.3);
+}
+.login-tagline {
+  font-size: .68rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 52px; text-align: center;
+  font-family: 'Cinzel', serif;
+}
+.login-card {
+  width: 100%; max-width: 340px;
+  background: var(--bg2);
+  border: 1px solid rgba(201,168,76,.15);
+  border-radius: var(--r);
+  padding: 28px 24px;
+}
+.login-card h2 {
+  font-family: 'Cinzel', serif;
+  font-size: .85rem; font-weight: 600; letter-spacing: .08em;
+  color: var(--text); margin-bottom: 8px;
+}
+.login-card p { font-size: .78rem; color: var(--text3); line-height: 1.6; margin-bottom: 24px; }
+.btn-google {
+  width: 100%; background: var(--bg3);
+  border: 1px solid var(--bg4);
+  padding: 13px 18px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: .85rem; font-weight: 600; color: var(--text);
+  transition: all .2s; font-family: 'DM Sans', sans-serif;
+}
+.btn-google:hover, .btn-google:active { border-color: var(--gold); background: var(--bg4); }
+.btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ── HOME PAGE ── */
+#page-home { padding: 20px 16px; }
+
+.section-label {
+  font-size: .58rem; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--text3);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--bg3); }
+
+.stats-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 24px;
+}
+.stat-pill {
+  background: var(--bg2); border: 1px solid var(--bg3);
+  border-radius: var(--r-sm); padding: 14px 16px;
+  position: relative; overflow: hidden;
+}
+.stat-pill::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--gold); opacity: .4;
+}
+.stat-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem; font-weight: 700; color: var(--gold);
+  line-height: 1; margin-bottom: 4px;
+}
+.stat-desc { font-size: .62rem; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; }
+
+/* ── PIE CHART (SVG) ── */
+.chart-card {
+  background: var(--bg2); border: 1px solid var(--bg3);
+  border-radius: var(--r); padding: 18px; margin-bottom: 14px;
+}
+.chart-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: .65rem; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--text2);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 7px;
+}
+.chart-card-title svg { width: 12px; height: 12px; color: var(--gold); }
+
+.pie-wrap { display: flex; align-items: center; gap: 20px; }
+#pie-svg { flex-shrink: 0; }
+
+.pie-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.pie-legend-item { display: flex; align-items: center; gap: 8px; }
+.pie-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.pie-label { font-size: .72rem; color: var(--text2); flex: 1; }
+.pie-val { font-size: .72rem; font-weight: 700; color: var(--text); }
+
+/* ── BAR CHART (month) ── */
+.month-bars {
+  display: flex; gap: 4px; align-items: flex-end;
+  height: 80px; margin-bottom: 10px;
+}
+.mbar-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end; gap: 4px;
+}
+.mbar {
+  width: 100%; border-radius: 3px 3px 0 0;
+  min-height: 3px; transition: height .4s ease;
+}
+.mbar-label {
+  font-size: .52rem; color: var(--text3);
+  text-align: center; line-height: 1;
+}
+.month-legend {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+}
+.mleg-item { display: flex; align-items: center; gap: 5px; font-size: .65rem; color: var(--text3); }
+.mleg-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+/* ── SEARCH PAGE ── */
+#page-search { padding: 16px; }
+
+.search-box {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg2); border: 1.5px solid var(--bg4);
+  border-radius: 50px; padding: 10px 16px;
+  margin-bottom: 14px; transition: border-color .2s;
+}
+.search-box:focus-within { border-color: var(--gold); }
+.search-box svg { width: 16px; height: 16px; color: var(--text3); flex-shrink: 0; }
+.search-box input {
+  border: none; background: none; outline: none;
+  font-size: .9rem; color: var(--text); width: 100%;
+  font-family: 'DM Sans', sans-serif;
+}
+.search-box input::placeholder { color: var(--text3); }
+
+.filters-scroll {
+  display: flex; gap: 8px; overflow-x: auto;
+  padding-bottom: 4px; margin-bottom: 16px;
+  scrollbar-width: none;
+}
+.filters-scroll::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  white-space: nowrap;
+  background: var(--bg2); border: 1px solid var(--bg3);
+  border-radius: 20px; padding: 6px 14px;
+  font-size: .72rem; color: var(--text2); font-weight: 500;
+  transition: all .15s; flex-shrink: 0;
+}
+.filter-chip.active { background: var(--gold); color: var(--bg); border-color: var(--gold); font-weight: 700; }
+
+.date-filters {
+  display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.date-select {
+  background: var(--bg2); border: 1px solid var(--bg3);
+  border-radius: var(--r-sm); padding: 7px 12px;
+  font-size: .75rem; color: var(--text2);
+  font-family: 'DM Sans', sans-serif; outline: none;
+  transition: border-color .2s;
+}
+.date-select:focus { border-color: var(--gold); }
+
+.results-count {
+  font-size: .68rem; color: var(--text3); margin-bottom: 12px;
+  letter-spacing: .04em;
+}
+
+.doc-list { display: flex; flex-direction: column; gap: 10px; }
+
+.doc-card {
+  background: var(--bg2); border: 1px solid var(--bg3);
+  border-radius: var(--r); padding: 16px;
+  transition: border-color .15s, background .15s;
+  border-left: 3px solid var(--bg3);
+  position: relative; overflow: hidden;
+}
+.doc-card:active { background: var(--bg3); border-left-color: var(--gold); }
+.doc-card-title {
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.05rem; font-weight: 600; color: var(--text);
+  line-height: 1.3; margin-bottom: 6px;
+}
+.doc-card-meta {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+}
+.doc-chip {
+  font-size: .58rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 3px;
+}
+.chip-sermao  { background: rgba(201,168,76,.15); color: var(--gold); }
+.chip-aula    { background: rgba(46,78,110,.3);  color: #6ab0e8; }
+.chip-palestra{ background: rgba(94,58,123,.3);  color: #b882e8; }
+.chip-devocional { background: rgba(46,110,74,.3); color: #6ad0a0; }
+.chip-estudo  { background: rgba(107,90,46,.3);  color: #c8b060; }
+
+.doc-card-ref { font-size: .75rem; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+.doc-card-bottom { display: flex; justify-content: space-between; align-items: center; }
+.doc-card-date { font-size: .65rem; color: var(--text3); }
+.doc-card-theme { font-size: .65rem; color: var(--text3); font-style: italic; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.empty-state {
+  text-align: center; padding: 52px 24px; color: var(--text3);
+}
+.empty-state svg { width: 40px; height: 40px; opacity: .2; margin-bottom: 12px; }
+.empty-state h3 { font-family: 'Cinzel', serif; font-size: .8rem; margin-bottom: 6px; letter-spacing: .08em; }
+.empty-state p { font-size: .75rem; line-height: 1.6; }
+
+/* ── VIEWER PAGE ── */
+#page-viewer { padding: 0; }
+
+.viewer-topbar {
+  position: sticky; top: 0; z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--bg3);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-back {
+  background: none; border: none; color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+  font-size: .78rem; font-weight: 500;
+  padding: 6px 10px 6px 4px;
+  border-radius: var(--r-sm);
+  transition: color .15s;
+}
+.btn-back:active { color: var(--gold); }
+.btn-back svg { width: 16px; height: 16px; }
+.viewer-topbar-actions { display: flex; gap: 8px; margin-left: auto; }
+.btn-action {
+  background: var(--bg2); border: 1px solid var(--bg3);
+  padding: 7px 14px; border-radius: var(--r-sm);
+  font-size: .72rem; font-weight: 600; color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-action:active { border-color: var(--gold); color: var(--gold); }
+.btn-action svg { width: 13px; height: 13px; }
+.btn-action.gold { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+.btn-action.gold:active { opacity: .85; }
+
+#viewer-content {
+  padding: 24px 18px 40px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.15rem;
+  line-height: 1.85;
+  color: var(--text);
+}
+#viewer-content .doc-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+  line-height: 1.25; color: var(--gold);
+  margin-bottom: 8px; text-align: center;
+}
+#viewer-content .doc-ref {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .7rem; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--text3);
+  text-align: center; margin-bottom: 6px;
+}
+#viewer-content .doc-meta-row {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-bottom: 20px;
+}
+#viewer-content .doc-meta-item {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .62rem; color: var(--text3);
+}
+#viewer-content .ornament {
+  text-align: center; color: var(--gold); opacity: .4;
+  letter-spacing: .5em; margin: 16px 0 24px;
+  font-size: .8rem;
+}
+#viewer-content .bible-block {
+  background: rgba(201,168,76,.07);
+  border-left: 3px solid var(--gold);
+  padding: 14px 16px; margin: 16px 0;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+#viewer-content .bible-verse { font-style: italic; margin-bottom: .4em; font-size: 1.05rem; }
+#viewer-content .bible-ref {
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal; font-size: .62rem; font-weight: 700;
+  color: var(--gold); letter-spacing: .1em; margin-right: 6px;
+}
+#viewer-content h2 {
+  font-family: 'Cinzel', serif; font-size: .65rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 10px;
+  margin: 32px 0 16px;
+}
+#viewer-content h2::before,
+#viewer-content h2::after { content: ''; flex: 1; height: 1px; background: var(--bg3); }
+#viewer-content h3 {
+  font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600;
+  color: var(--text); margin: 20px 0 4px;
+}
+#viewer-content p { margin-bottom: .6em; }
+#viewer-content .impact-quote {
+  text-align: center; font-style: italic; font-weight: 600;
+  color: var(--gold2); font-size: 1.1rem;
+  border-top: 1px solid var(--bg3); border-bottom: 1px solid var(--bg3);
+  padding: 14px 8px; margin: 20px 0;
+}
+#viewer-content .challenge-block {
+  background: var(--bg2); border: 1px solid var(--bg3);
+  border-top: 2px solid var(--gold); border-radius: var(--r-sm);
+  padding: 18px; margin-top: 28px;
+}
+#viewer-content .challenge-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .6rem; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 8px;
+}
+
+/* ── LOADING ── */
+#loading-screen {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px;
+}
+.loading-logo {
+  font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700;
+  letter-spacing: .2em; color: var(--gold);
+}
+.loading-ring {
+  width: 28px; height: 28px;
+  border: 2px solid var(--bg3); border-top-color: var(--gold);
+  border-radius: 50%; animation: spin .7s linear infinite;
+}
+.loading-text {
+  font-size: .65rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text3); font-family: 'Cinzel', serif;
+}
+
+/* ── TOAST ── */
+#toast-zone {
+  position: fixed; bottom: calc(70px + var(--safe-bot)); left: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 6px; z-index: 500;
+  pointer-events: none;
+}
+.toast {
+  background: var(--bg3); color: var(--text);
+  padding: 10px 16px; border-radius: var(--r-sm);
+  font-size: .78rem; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  animation: toastIn .22s ease;
+  border: 1px solid var(--bg4);
+}
+.toast.success { border-color: rgba(106,208,160,.3); }
+.toast.error { border-color: rgba(192,57,43,.4); }
+@keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── SYNC STATUS ── */
+#sync-bar {
+  font-size: .62rem; color: var(--text3); text-align: center;
+  padding: 4px 16px; background: var(--bg);
+  border-bottom: 1px solid var(--bg2);
+  min-height: 22px; display: none;
+  align-items: center; justify-content: center;
+}
+
+/* ── UTIL ── */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loading-logo">KTL</div>
+  <div class="loading-ring"></div>
+  <div class="loading-text">Carregando…</div>
+</div>
+
+<div id="toast-zone"></div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="hidden">
+  <div class="login-glow">
+    <div class="login-logo">KTL</div>
+  </div>
+  <div class="login-tagline">Kḗryxon ton Lógon · Consulta</div>
+  <div class="login-card">
+    <h2>Acesso</h2>
+    <p>Entre com sua conta Google para consultar sua biblioteca ministerial.</p>
+    <button class="btn-google" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Entrar com Google
+    </button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden" style="flex-direction:column;height:100%;">
+
+  <div id="status-bar"></div>
+
+  <!-- TOP NAV -->
+  <div id="topnav">
+    <div class="nav-brand">
+      <div class="nav-brand-dot"></div>
+      KTL
+    </div>
+    <div id="sync-bar-inline" style="flex:1;font-size:.62rem;color:var(--text3);text-align:center;"></div>
+    <div class="nav-user">
+      <div class="user-av" id="user-av">?</div>
+      <button class="btn-sync" id="sync-btn" onclick="syncNow()" title="Sincronizar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+      <button class="btn-sync" onclick="signOut()" title="Sair / Reconectar" style="border-color:rgba(192,57,43,.35);color:#c0392b;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div id="pages">
+
+    <!-- HOME -->
+    <div id="page-home" class="page">
+      <div style="padding:20px 16px;">
+
+        <div class="section-label">Resumo</div>
+        <div class="stats-row" id="stats-row">
+          <div class="stat-pill">
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-desc">Total</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-num" id="stat-year">0</div>
+            <div class="stat-desc" id="stat-year-label">Este ano</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-bottom:12px;">Por ano</div>
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            Distribuição Anual
+          </div>
+          <div class="pie-wrap">
+            <svg id="pie-svg" width="110" height="110" viewBox="0 0 110 110"></svg>
+            <div class="pie-legend" id="pie-legend"></div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-bottom:12px;">Este mês</div>
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="month-chart-title">Este mês</span>
+          </div>
+          <div class="month-bars" id="month-bars"></div>
+          <div class="month-legend" id="month-legend"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div id="page-search" class="page hidden">
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="search-input" placeholder="Buscar por título, texto, tema…" oninput="doSearch()" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+
+      <!-- Type filter chips -->
+      <div class="filters-scroll" id="type-filters">
+        <div class="filter-chip active" data-type="" onclick="setType(this,'')">Todos</div>
+        <div class="filter-chip" data-type="sermao" onclick="setType(this,'sermao')">Sermões</div>
+        <div class="filter-chip" data-type="aula" onclick="setType(this,'aula')">Aulas</div>
+        <div class="filter-chip" data-type="palestra" onclick="setType(this,'palestra')">Palestras</div>
+        <div class="filter-chip" data-type="devocional" onclick="setType(this,'devocional')">Devocionais</div>
+        <div class="filter-chip" data-type="estudo" onclick="setType(this,'estudo')">Estudos</div>
+      </div>
+
+      <!-- Year/Month filters -->
+      <div class="date-filters">
+        <select class="date-select" id="filter-year" onchange="doSearch()">
+          <option value="">Todos os anos</option>
+        </select>
+        <select class="date-select" id="filter-month" onchange="doSearch()">
+          <option value="">Todos os meses</option>
+          <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+          <option value="03">Março</option><option value="04">Abril</option>
+          <option value="05">Maio</option><option value="06">Junho</option>
+          <option value="07">Julho</option><option value="08">Agosto</option>
+          <option value="09">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+
+      <div class="results-count" id="results-count"></div>
+      <div class="doc-list" id="doc-list"></div>
+    </div>
+
+    <!-- VIEWER -->
+    <div id="page-viewer" class="page hidden">
+      <div class="viewer-topbar">
+        <button class="btn-back" onclick="goBack()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <div class="viewer-topbar-actions">
+          <button class="btn-action gold" onclick="exportPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            PDF
+          </button>
+        </div>
+      </div>
+      <div id="viewer-content"></div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottomnav">
+    <button class="bnav-item active" id="bnav-home" onclick="gotoPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Início
+    </button>
+    <button class="bnav-item" id="bnav-search" onclick="gotoPage('search')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Buscar
+    </button>
+  </div>
+
+</div>
+
+<script>
+// ── CONSTANTS ──
+const CLIENT_ID = '292394954203-qv5a9q70k0buvsphpai4il9qqcp56f9q.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile';
+const API = 'https://www.googleapis.com/drive/v3';
+const UPLOAD = 'https://www.googleapis.com/upload/drive/v3';
+const FOLDER = 'KTL_SermoesApp';
+const DB_NAME = 'KTLCache'; // SAME as main app — shares data!
+
+const TYPE_COLORS = {
+  sermao:'#c9a84c', aula:'#6ab0e8', palestra:'#b882e8',
+  devocional:'#6ad0a0', estudo:'#c8b060'
+};
+const TYPE_LABELS = {
+  sermao:'Sermão', aula:'Aula', palestra:'Palestra',
+  devocional:'Devocional', estudo:'Estudo'
+};
+const MONTHS_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MONTHS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// ── STATE ──
+let token = null, folderId = null;
+let docs = [];
+let currentDoc = null;
+let currentPage = 'home';
+let prevPage = 'home';
+let filterType = '';
+let searchQ = '';
+let _isSyncing = false;
+let db = null;
+let _tokenClient = null;
+let _tokenExpiry = 0;
+
+// ── INIT ──
+window.addEventListener('load', () => {
+  setTimeout(async () => {
+    // 1. Carrega o cache local primeiro — NUNCA depende do Google para mostrar algo
+    try {
+      await openDB();
+      const cached = await dbGetAll('docs');
+      docs = cached.filter(d => d.id && !d.key);
+      docs.sort((a,b) => (b.updated||b.created||'').localeCompare(a.updated||a.created||''));
+    } catch(e) {
+      docs = docs || [];
+    }
+
+    // 2. Captura o token caso tenhamos voltado do login do Google (hash da URL)
+    let fromRedirect = false;
+    try { fromRedirect = handleOAuthRedirect(); } catch(e) {}
+
+    // 3. Recupera token salvo
+    const t = localStorage.getItem('ktl_token');
+    const exp = parseInt(localStorage.getItem('ktl_token_expiry') || '0', 10);
+
+    hide('loading-screen');
+
+    if (t || fromRedirect) {
+      token = token || t;
+      _tokenExpiry = _tokenExpiry || exp;
+      await loadProfile();   // loadProfile já trata falha mostrando cache ou login
+    } else if (docs.length > 0) {
+      // Tem dados no cache mas sem token: mostra o app mesmo assim (modo consulta offline)
+      show('app');
+      refreshHome(); doSearch();
+      setSyncStatus('Toque em sincronizar para atualizar');
+    } else {
+      show('login-screen');
+    }
+  }, 400);
+});
+
+// ── AUTH (redirect-based — funciona no Safari iOS) ──
+// Usa OAuth2 implicit flow com redirect em vez de popup
+const REDIRECT_URI = 'https://eneas-ena.github.io/ktl/mobile.html';
+const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+function signIn() {
+  // Salva a URL atual para voltar depois do login
+  localStorage.setItem('ktl_return_path', window.location.pathname + window.location.search);
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'token',
+    scope: SCOPES,
+    prompt: 'select_account'
+  });
+  // Redireciona para o Google — funciona em qualquer browser incluindo Safari
+  window.location.href = AUTH_URL + '?' + params.toString();
+}
+
+function handleOAuthRedirect() {
+  // Após o redirect, o token vem no hash da URL: #access_token=...&expires_in=...
+  const hash = window.location.hash.substring(1);
+  if (!hash) return false;
+  const params = new URLSearchParams(hash);
+  const t = params.get('access_token');
+  const exp = params.get('expires_in');
+  if (!t) return false;
+  token = t;
+  _tokenExpiry = Date.now() + (exp ? parseInt(exp) * 1000 : 3500 * 1000);
+  localStorage.setItem('ktl_token', token);
+  localStorage.setItem('ktl_token_expiry', _tokenExpiry.toString());
+  // Limpa o hash da URL sem recarregar
+  history.replaceState(null, '', window.location.pathname + window.location.search);
+  return true;
+}
+
+// Renovação silenciosa usando a biblioteca oficial do Google (GIS).
+// É MUITO mais confiável que o iframe antigo, que o Safari/iOS bloqueava.
+let _gisClient = null;
+function gisClient() {
+  if (_gisClient) return _gisClient;
+  if (!(window.google && google.accounts && google.accounts.oauth2)) return null;
+  _gisClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: () => {}
+  });
+  return _gisClient;
+}
+
+async function renewToken() {
+  const client = gisClient();
+  if (!client) throw new Error('gis_indisponivel');
+  return new Promise((resolve, reject) => {
+    client.callback = (r) => {
+      if (r && r.access_token) {
+        token = r.access_token;
+        _tokenExpiry = Date.now() + (parseInt(r.expires_in || '3600', 10) * 1000);
+        localStorage.setItem('ktl_token', token);
+        localStorage.setItem('ktl_token_expiry', String(_tokenExpiry));
+        resolve(token);
+      } else {
+        reject(new Error(r && r.error ? r.error : 'no_token'));
+      }
+    };
+    try { client.requestAccessToken({ prompt: '' }); }   // silencioso
+    catch(e) { reject(e); }
+  });
+}
+
+async function ensureValidToken() {
+  const expiry = _tokenExpiry || parseInt(localStorage.getItem('ktl_token_expiry') || '0', 10);
+  if (!token || Date.now() > expiry - 5 * 60 * 1000) {
+    await renewToken();   // se falhar, o erro sobe para gFetch tratar
+  }
+}
+
+async function loadProfile() {
+  try {
+    const r = await gFetch('https://www.googleapis.com/oauth2/v3/userinfo');
+    if (!r.ok) throw new Error('userinfo ' + r.status);
+    const profile = await r.json();
+    const av = document.getElementById('user-av');
+    if (profile.picture) av.innerHTML = `<img src="${profile.picture}">`;
+    else av.textContent = (profile.name||'U')[0];
+    hide('loading-screen');
+    show('app');
+    // Recarrega docs do cache antes de renderizar
+    try {
+      const cached = await dbGetAll('docs');
+      docs = cached.filter(d => d.id && !d.key);
+      docs.sort((a,b) => (b.updated||b.created||'').localeCompare(a.updated||a.created||''));
+    } catch(_) {}
+    refreshHome();
+    doSearch();
+    syncInBackground();
+  } catch(e) {
+    hide('loading-screen');
+    // NUNCA fica em branco: se há cache, mostra o app; senão, pede login
+    if (docs && docs.length > 0) {
+      show('app');
+      refreshHome(); doSearch();
+      setSyncStatus('Sessão expirada — toque em sincronizar para reconectar');
+    } else {
+      localStorage.removeItem('ktl_token');
+      localStorage.removeItem('ktl_token_expiry');
+      show('login-screen');
+      toast('Sessão expirada. Toque em "Entrar com Google".', 'error');
+    }
+  }
+}
+
+// ── DRIVE ──
+async function gFetch(url, opts={}) {
+  try { await ensureValidToken(); } catch(e) {}
+  opts.headers = {...(opts.headers||{}), Authorization:'Bearer '+token};
+  let res = await fetch(url, opts);
+  if (res.status === 401) {
+    try {
+      await renewToken();
+      opts.headers['Authorization'] = 'Bearer ' + token;
+      res = await fetch(url, opts);
+    } catch(e) {
+      // Não conseguiu renovar em silêncio. NÃO joga pro login nem apaga o cache:
+      // mantém o que está na tela e avisa que precisa reconectar.
+      if (docs && docs.length > 0) {
+        setSyncStatus('Sessão expirada — toque em sincronizar para reconectar');
+      } else {
+        token = null;
+        localStorage.removeItem('ktl_token');
+        localStorage.removeItem('ktl_token_expiry');
+        hide('app'); show('login-screen');
+        toast('Sessão expirada. Toque em "Entrar com Google".', 'error');
+      }
+      throw new Error('401');
+    }
+  }
+  return res;
+}
+
+// ── INDEXEDDB (shared with main app) ──
+async function openDB() {
+  if (db) return db;
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 2);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('docs')) d.createObjectStore('docs', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('meta')) d.createObjectStore('meta', { keyPath: 'key' });
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+    req.onblocked = () => reject(new Error('IndexedDB bloqueado'));
+  });
+}
+
+async function dbGetAll(store) {
+  const d = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = d.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function dbPut(store, item) {
+  const d = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = d.transaction(store, 'readwrite');
+    tx.objectStore(store).put(item);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function dbDelete(store, key) {
+  const d = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = d.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(key);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ── SYNC ──
+function setSyncStatus(msg, spin=false) {
+  const el = document.getElementById('sync-bar-inline');
+  const btn = document.getElementById('sync-btn');
+  if (msg) { el.textContent = msg; }
+  else { el.textContent = ''; }
+  if (spin) btn.classList.add('spinning'); else btn.classList.remove('spinning');
+}
+
+async function ensureFolder() {
+  const q = `name='${FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const r = await gFetch(`${API}/files?q=${encodeURIComponent(q)}&fields=files(id)`);
+  const d = await r.json();
+  if (d.files?.length) { folderId = d.files[0].id; return; }
+  const cr = await gFetch(`${API}/files`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name:FOLDER, mimeType:'application/vnd.google-apps.folder'})
+  });
+  folderId = (await cr.json()).id;
+}
+
+async function syncInBackground() {
+  if (_isSyncing || !token) return;
+  _isSyncing = true;
+  setSyncStatus('Sincronizando…', true);
+  try {
+    if (!folderId) {
+      const meta = await dbGetAll('meta');
+      const fm = meta.find(m => m.key === 'folderId');
+      if (fm) folderId = fm.data;
+      else await ensureFolder();
+    }
+    await smartSync();
+    refreshHome();
+    doSearch();
+    const now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    setSyncStatus('✓ ' + now, false);
+    setTimeout(() => setSyncStatus(''), 4000);
+  } catch(e) {
+    setSyncStatus(e.message?.includes('401') ? '⚠ Sessão expirada' : '⚠ Offline', false);
+    setTimeout(() => setSyncStatus(''), 5000);
+  } finally {
+    _isSyncing = false;
+  }
+}
+
+async function syncNow() {
+  if (_isSyncing) return;
+  if (!token) {
+    hide('app');
+    show('login-screen');
+    return;
+  }
+  await syncInBackground();
+}
+
+async function smartSync() {
+  const q = `'${folderId}' in parents and trashed=false and name contains '.json' and not name='ktl_series.json' and not name='ktl_books.json' and not name='ktl_illustrations.json'`;
+  const r = await gFetch(`${API}/files?q=${encodeURIComponent(q)}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=1000`);
+  const d = await r.json();
+  const driveFiles = d.files || [];
+
+  const metaEntries = await dbGetAll('meta');
+  const indexMeta = metaEntries.find(m => m.key === 'docsIndex');
+  const cachedIndex = indexMeta ? indexMeta.data : {};
+
+  const toFetch = driveFiles.filter(f => {
+    const cached = cachedIndex[f.id];
+    return !cached || cached.modifiedTime !== f.modifiedTime;
+  });
+
+  const driveIds = new Set(driveFiles.map(f => f.id));
+  const toDelete = Object.keys(cachedIndex).filter(id => !driveIds.has(id));
+  for (const id of toDelete) {
+    const entry = cachedIndex[id];
+    if (entry?.docId) {
+      const allDocs = await dbGetAll('docs');
+      const loc = allDocs.find(d => d.id === entry.docId);
+      if (loc?._driveId) await dbDelete('docs', entry.docId);
+    }
+    delete cachedIndex[id];
+  }
+
+  if (toFetch.length > 0) setSyncStatus(`Atualizando ${toFetch.length} doc${toFetch.length>1?'s':''}…`, true);
+
+  const BATCH = 10;
+  for (let i = 0; i < toFetch.length; i += BATCH) {
+    const batch = toFetch.slice(i, i+BATCH);
+    const results = await Promise.allSettled(batch.map(async f => {
+      const res = await gFetch(`${API}/files/${f.id}?alt=media`);
+      const doc = await res.json();
+      doc._driveId = f.id; doc._modified = f.modifiedTime;
+      return { file: f, doc };
+    }));
+    for (const r of results) {
+      if (r.status === 'fulfilled') {
+        const { file, doc } = r.value;
+        await dbPut('docs', doc);
+        cachedIndex[file.id] = { modifiedTime: file.modifiedTime, docId: doc.id };
+      }
+    }
+  }
+
+  await dbPut('meta', { key: 'docsIndex', data: cachedIndex });
+  await dbPut('meta', { key: 'folderId', data: folderId });
+
+  const allDocs = await dbGetAll('docs');
+  docs = allDocs.filter(d => d.id && !d.key);
+  docs.sort((a,b) => (b.updated||b.created||'').localeCompare(a.updated||a.created||''));
+}
+
+// ── NAVIGATION ──
+function gotoPage(page) {
+  if (page === currentPage && page !== 'viewer') return;
+  const prev = document.getElementById('page-' + currentPage);
+  const next = document.getElementById('page-' + page);
+  if (prev) prev.classList.add(page === 'home' ? 'hidden' : 'slide-left');
+  if (next) { next.classList.remove('hidden','slide-left'); }
+
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  const bnav = document.getElementById('bnav-' + page);
+  if (bnav) bnav.classList.add('active');
+
+  prevPage = currentPage;
+  currentPage = page;
+
+  if (page === 'search') {
+    setTimeout(() => document.getElementById('search-input')?.focus(), 100);
+    doSearch();
+  }
+  if (page === 'home') refreshHome();
+}
+
+function goBack() {
+  gotoPage(prevPage === 'viewer' ? 'search' : prevPage);
+}
+
+// ── HOME ──
+function refreshHome() {
+  const now = new Date();
+  const year = now.getFullYear().toString();
+  const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+  document.getElementById('stat-total').textContent = docs.length;
+  document.getElementById('stat-year').textContent = docs.filter(d=>d.date&&dateYear(d.date)===year).length;
+  document.getElementById('stat-year-label').textContent = year;
+
+  renderPieChart();
+  renderMonthBars(month, now.getMonth());
+}
+
+function renderPieChart() {
+  // Group by year
+  const byYear = {};
+  docs.forEach(d => {
+    if (!d.date) return;
+    const y = dateYear(d.date);
+    if (y) byYear[y] = (byYear[y]||0) + 1;
+  });
+  const years = Object.keys(byYear).sort().reverse();
+  const total = Object.values(byYear).reduce((a,b)=>a+b,0) || 1;
+
+  // Colors for years
+  const palette = ['#c9a84c','#e8c96a','#9b6c3a','#6ab0e8','#b882e8','#6ad0a0','#c8b060','#e88080'];
+  const cx=55, cy=55, r=40;
+  const circ = 2*Math.PI*r;
+
+  let paths = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#26221e" stroke-width="16"/>`;
+  let offset = 0;
+  years.slice(0,8).forEach((y,i) => {
+    const pct = byYear[y]/total;
+    const dash = pct*circ;
+    const col = palette[i%palette.length];
+    paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${col}" stroke-width="16"
+      stroke-dasharray="${dash} ${circ-dash}"
+      stroke-dashoffset="${-offset}"
+      transform="rotate(-90 ${cx} ${cy})" opacity=".9"/>`;
+    offset += dash;
+  });
+  paths += `<text x="${cx}" y="${cy-4}" text-anchor="middle" font-family="Cinzel,serif" font-size="13" fill="#c9a84c" font-weight="700">${docs.length}</text>`;
+  paths += `<text x="${cx}" y="${cy+10}" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="7" fill="#7a7060" letter-spacing="1">DOCS</text>`;
+  document.getElementById('pie-svg').innerHTML = paths;
+
+  document.getElementById('pie-legend').innerHTML = years.slice(0,6).map((y,i) => `
+    <div class="pie-legend-item">
+      <div class="pie-dot" style="background:${palette[i%palette.length]};"></div>
+      <span class="pie-label">${y}</span>
+      <span class="pie-val">${byYear[y]}</span>
+    </div>`).join('');
+}
+
+function renderMonthBars(monthPrefix, monthIdx) {
+  const types = ['sermao','aula','palestra','devocional','estudo'];
+  const counts = types.map(t => docs.filter(d=>d.date&&datePrefix(d.date)===monthPrefix&&d.type===t).length);
+  const total = counts.reduce((a,b)=>a+b,0);
+  const max = Math.max(...counts, 1);
+
+  document.getElementById('month-chart-title').textContent =
+    MONTHS_FULL[monthIdx] + ' · ' + total + ' doc' + (total!==1?'s':'');
+
+  document.getElementById('month-bars').innerHTML = types.map((t,i) => {
+    const h = Math.max(4, Math.round((counts[i]/max)*72));
+    return `<div class="mbar-wrap">
+      <div class="mbar" style="height:${h}px;background:${TYPE_COLORS[t]};opacity:${counts[i]>0?'.85':'.18'};"></div>
+      <div class="mbar-label">${TYPE_LABELS[t].substring(0,3)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('month-legend').innerHTML = types.map((t,i) => `
+    <div class="mleg-item">
+      <div class="mleg-dot" style="background:${TYPE_COLORS[t]};"></div>
+      ${TYPE_LABELS[t]}: <strong style="color:var(--text2);margin-left:2px;">${counts[i]}</strong>
+    </div>`).join('');
+}
+
+// ── SEARCH ──
+function setType(el, type) {
+  filterType = type;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  doSearch();
+}
+
+function doSearch() {
+  const q = (document.getElementById('search-input')?.value||'').toLowerCase().trim();
+  const year = document.getElementById('filter-year')?.value||'';
+  const month = document.getElementById('filter-month')?.value||'';
+  searchQ = q;
+
+  let list = docs.filter(d => {
+    if (filterType && d.type !== filterType) return false;
+    if (year && dateYear(d.date||'') !== year) return false;
+    if (month && (datePrefix(d.date||'')||'').split('-')[1] !== month) return false;
+    if (q) {
+      return (d.title||'').toLowerCase().includes(q) ||
+             (d.theme||'').toLowerCase().includes(q) ||
+             (d.ref||'').toLowerCase().includes(q) ||
+             (d.content||'').toLowerCase().includes(q) ||
+             (d.intro||'').toLowerCase().includes(q) ||
+             (d.conclusion||'').toLowerCase().includes(q);
+    }
+    return true;
+  });
+
+  list.sort((a,b) => (b.date||b.updated||'').localeCompare(a.date||a.updated||''));
+
+  // Update year dropdown
+  const years = [...new Set(docs.map(d=>dateYear(d.date||'')).filter(Boolean))].sort().reverse();
+  const ySel = document.getElementById('filter-year');
+  if (ySel) {
+    const cur = ySel.value;
+    ySel.innerHTML = '<option value="">Todos os anos</option>' +
+      years.map(y=>`<option value="${y}">${y}</option>`).join('');
+    ySel.value = cur;
+  }
+
+  document.getElementById('results-count').textContent =
+    list.length ? `${list.length} resultado${list.length!==1?'s':''}` : '';
+
+  const container = document.getElementById('doc-list');
+  if (!list.length) {
+    container.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <h3>${q || filterType || year ? 'Nenhum resultado' : 'Nenhum documento'}</h3>
+      <p>${q || filterType ? 'Tente outros termos ou filtros.' : 'Sincronize para carregar seus documentos.'}</p>
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(d => `
+    <div class="doc-card" onclick="openDoc('${d.id}')">
+      <div class="doc-card-title">${highlight(d.title||'Sem título', q)}</div>
+      <div class="doc-card-meta">
+        <span class="doc-chip chip-${d.type||'sermao'}">${TYPE_LABELS[d.type]||d.type}</span>
+      </div>
+      ${d.ref ? `<div class="doc-card-ref">${d.ref}</div>` : ''}
+      <div class="doc-card-bottom">
+        <span class="doc-card-date">${d.date ? formatDate(d.date) : '—'}</span>
+        <span class="doc-card-theme">${highlight(d.theme||'', q)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function highlight(text, q) {
+  if (!q || !text) return text;
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<mark style="background:rgba(201,168,76,.25);color:var(--gold2);border-radius:2px;">$1</mark>');
+}
+
+// ── VIEWER ──
+function openDoc(id) {
+  const doc = docs.find(d => d.id === id);
+  if (!doc) return;
+  currentDoc = doc;
+  document.getElementById('viewer-content').innerHTML = renderDoc(doc);
+  prevPage = currentPage;
+  // Swap pages
+  document.getElementById('page-' + currentPage).classList.add('slide-left');
+  const vp = document.getElementById('page-viewer');
+  vp.classList.remove('hidden','slide-left');
+  currentPage = 'viewer';
+  vp.scrollTop = 0;
+}
+
+function renderDoc(doc) {
+  const typeLabel = TYPE_LABELS[doc.type]||'';
+  let h = `<div class="doc-title">${doc.title||'Sem título'}</div>`;
+  if (doc.ref) h += `<div class="doc-ref">${doc.ref}</div>`;
+  const meta = [];
+  if (doc.date) meta.push(formatDate(doc.date));
+  if (doc.local) meta.push(doc.local);
+  if (doc.theme) meta.push(doc.theme);
+  if (typeLabel) meta.push(typeLabel);
+  if (meta.length) h += `<div class="doc-meta-row">${meta.map(m=>`<span class="doc-meta-item">${m}</span>`).join('<span class="doc-meta-item" style="opacity:.3;">·</span>')}</div>`;
+  h += `<div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>`;
+
+  if (doc.mode === 'structured') {
+    if (doc.baseText) h += `<div class="bible-block">${renderBible(doc.baseText)}</div>`;
+    if (doc.intro) { h += `<h2>Introdução</h2>`; h += doc.intro.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join(''); }
+    (doc.points||[]).forEach((p,i) => {
+      h += `<h2>${i+1}. ${p.title||'Ponto '+(i+1)}</h2>`;
+      if (p.tagline) h += `<span style="font-family:'DM Sans',sans-serif;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:14px;">${p.tagline}</span>`;
+      if (p.content) h += p.content.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
+      if (p.bibleBlock) h += `<div class="bible-block">${renderBible(p.bibleBlock)}</div>`;
+      if (p.impactQuote) h += `<div class="impact-quote">${p.impactQuote}</div>`;
+    });
+    if (doc.conclusion) { h += `<h2>Conclusão</h2>`; h += doc.conclusion.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join(''); }
+    if (doc.challenge) h += `<div class="challenge-block"><span class="challenge-label">Desafio Final</span>${doc.challenge.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('')}</div>`;
+  } else {
+    let sc = 0;
+    for (const part of (doc.content||'').split(/(\{[^}]+\})/g)) {
+      if (part.startsWith('{')&&part.endsWith('}')) {
+        const inner = part.slice(1,-1).trim();
+        h += sc===0
+          ? `<div class="bible-block" style="margin-bottom:20px;">${renderBible(inner)}</div>`
+          : `<div class="bible-block">${renderBible(inner)}</div>`;
+        sc++;
+      } else {
+        for (const line of part.split('\n').filter(l=>l.trim())) {
+          if (/^\d+\.\s/.test(line)) h += `<h3>${line}</h3>`;
+          else h += `<p>${line}</p>`;
+        }
+      }
+    }
+  }
+  return h;
+}
+
+function renderBible(text) {
+  return text.split('\n').filter(l=>l.trim()).map(line => {
+    const m = line.match(/^([A-Za-zÀ-ú0-9\s]+\s\d+[\.:]?\d*[-\d]*|v\.\d+[-\d]*)\s*[—–-]\s*/);
+    if (m) return `<p class="bible-verse"><span class="bible-ref">${m[1].trim()}</span>${line.substring(m[0].length)}</p>`;
+    return `<p class="bible-verse">${line}</p>`;
+  }).join('');
+}
+
+// ── PDF EXPORT ──
+async function exportPDF() {
+  if (!currentDoc) return;
+  toast('Gerando PDF…', 'info');
+
+  // Build print-ready HTML in new window
+  const content = renderDoc(currentDoc);
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>${currentDoc.title||'KTL'}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  @media print {
+    @page { margin: 2cm 2.5cm; size: A4; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Crimson Pro', Georgia, serif; font-size: 13pt; line-height: 1.8; color: #1a1612; background: #fff; padding: 0; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 32px 24px; }
+  .doc-title { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; color: #1a1612; }
+  .doc-ref { font-family: 'DM Sans', sans-serif; font-size: .65rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; text-align: center; color: #7a6040; margin-bottom: 6px; }
+  .doc-meta-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
+  .doc-meta-item { font-family: 'DM Sans', sans-serif; font-size: .65rem; color: #8a7a60; }
+  .ornament { text-align: center; color: #b89050; opacity: .5; letter-spacing: .5em; margin: 14px 0 22px; font-size: .8rem; }
+  .bible-block { background: #f8f4ee; border-left: 3px solid #c9a84c; padding: 14px 18px; margin: 16px 0; }
+  .bible-verse { font-style: italic; margin-bottom: .35em; }
+  .bible-ref { font-family: 'DM Sans', sans-serif; font-style: normal; font-size: .6rem; font-weight: 700; color: #9b7030; margin-right: 6px; }
+  h2 { font-family: 'Cinzel', serif; font-size: .65rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #7a5830; display: flex; align-items: center; gap: 10px; margin: 32px 0 16px; page-break-after: avoid; }
+  h2::before, h2::after { content: ''; flex: 1; height: 1px; background: #e0d5c0; }
+  h3 { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: #1a1612; margin: 20px 0 4px; page-break-after: avoid; }
+  p { margin-bottom: .55em; }
+  .impact-quote { text-align: center; font-style: italic; font-weight: 600; color: #7a5830; border-top: 1px solid #e0d5c0; border-bottom: 1px solid #e0d5c0; padding: 12px 6px; margin: 18px 0; }
+  .challenge-block { background: #f8f4ee; border: 1px solid #e0d5c0; border-top: 2px solid #c9a84c; padding: 18px 20px; margin-top: 28px; }
+  .challenge-label { font-family: 'DM Sans', sans-serif; font-size: .6rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #9b7030; display: block; margin-bottom: 8px; }
+  .ktl-footer { margin-top: 48px; padding-top: 12px; border-top: 1px solid #e0d5c0; font-family: 'DM Sans',sans-serif; font-size: .6rem; color: #a0906c; text-align: center; letter-spacing: .1em; }
+  mark { background: transparent; color: inherit; }
+</style>
+</head>
+<body>
+<div class="wrap">
+${content}
+<div class="ktl-footer">KTL · Kḗryxon ton Lógon · Igreja Vidas</div>
+</div>
+<script>
+window.onload = function() {
+  // Remove mark highlights for print
+  document.querySelectorAll('mark').forEach(m => { m.outerHTML = m.innerHTML; });
+  setTimeout(() => { window.print(); window.close(); }, 800);
+};
+<\/script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+  } else {
+    // Fallback: download as HTML
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+    a.download = (currentDoc.title||'documento').replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.html';
+    a.click();
+    toast('Salvo como HTML (popup bloqueado)', 'info');
+  }
+}
+
+// ── AUTH ──
+function signOut() {
+  token = null; _tokenExpiry = 0;
+  localStorage.removeItem('ktl_token');
+  localStorage.removeItem('ktl_token_expiry');
+  hide('app');
+  show('login-screen');
+  toast('Desconectado. Toque em "Entrar com Google".', 'info');
+}
+
+// ── TOAST ──
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-zone').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ── UTILS ──
+function show(id) {
+  const e = document.getElementById(id);
+  if (!e) return;
+  e.classList.remove('hidden');
+  // Preserve flex layout for app container
+  if (id === 'app') e.style.display = 'flex';
+  else e.style.display = '';
+}
+function hide(id) { const e=document.getElementById(id); if(e){e.classList.add('hidden');e.style.display='none';} }
+
+function parseDateParts(s) {
+  if (!s) return null;
+  s = s.trim();
+  if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(s)) { const p=s.substring(0,10).split('-'); return {y:p[0],m:p[1],d:p[2]}; }
+  if (/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}/.test(s)) { const p=s.split('/'); const y=p[2].length===2?'20'+p[2]:p[2]; return {y,m:p[1].padStart(2,'0'),d:p[0].padStart(2,'0')}; }
+  return null;
+}
+function formatDate(s) { const p=parseDateParts(s); if(!p) return s||'—'; return `${p.d}/${p.m}/${p.y}`; }
+function datePrefix(s) { const p=parseDateParts(s); if(!p) return ''; return `${p.y}-${p.m}`; }
+function dateYear(s) { const p=parseDateParts(s); if(!p) return ''; return p.y; }
+</script>
+</body>
+</html>
